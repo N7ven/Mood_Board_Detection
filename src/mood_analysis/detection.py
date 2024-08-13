@@ -5,6 +5,7 @@ from deepface import DeepFace
 import math
 import argparse
 import logging
+import requests 
 
 def face_detection(video_capture,cv2):
 
@@ -82,7 +83,7 @@ def face_detection(video_capture,cv2):
     rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
     # Detect faces in the frame
     faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
-    
+    global top, left, right, bottom
     # Face Detection part of the code ***************************************
     if process_this_frame:
         
@@ -138,28 +139,29 @@ def face_detection(video_capture,cv2):
         print(name)
 
     # AgeGender part of the code ****************************************
-    padding=20
-    resultImg,faceBoxes=highlightFace(faceNet,frame)
-    if not faceBoxes:
-        print("No face detected")
+    # padding=20
+    # resultImg,faceBoxes=highlightFace(faceNet,frame)
+    # if not faceBoxes:
+    #     print("No face detected")
 
-    for faceBox in faceBoxes:
-        face=frame[max(0,faceBox[1]-padding):
-                   min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
-                   :min(faceBox[2]+padding, frame.shape[1]-1)]
+    # for faceBox in faceBoxes:
+    #     face=frame[max(0,faceBox[1]-padding):
+    #                min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
+    #                :min(faceBox[2]+padding, frame.shape[1]-1)]
 
-        blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
-        genderNet.setInput(blob)
-        genderPreds=genderNet.forward()
-        gender=genderList[genderPreds[0].argmax()]
-        print(f'Gender: {gender}')
+    #     blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
+    #     genderNet.setInput(blob)
+    #     genderPreds=genderNet.forward()
+    #     gender=genderList[genderPreds[0].argmax()]
+    #     print(f'Gender: {gender}')
 
-        ageNet.setInput(blob)
-        agePreds=ageNet.forward()
-        age=ageList[agePreds[0].argmax()]
-        print(f'Age: {age[1:-1]} years')
-        cv2.putText(frame, "           "+gender+"-"+age, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-        #cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
+    #     ageNet.setInput(blob)
+    #     agePreds=ageNet.forward()
+    #     age=ageList[agePreds[0].argmax()]
+    #     print(f'Age: {age[1:-1]} years')
+    #     #cv2.putText(frame, "           "+gender+"-"+age, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+    #     #cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
+        post_results()
 
     # Display the resulting image
     cv2.imshow('Video', frame)
@@ -171,6 +173,20 @@ def face_detection(video_capture,cv2):
 # Release the capture and close all windows
   video_capture.release()
   cv2.destroyAllWindows()
+
+def post_results():
+    # The API endpoint
+    url = "https://jsonplaceholder.typicode.com/posts"
+    # Data to be sent
+    data = {
+    "userID": 1,
+    "title": "Making a POST request",
+    "body": "This is the data we created."
+    }
+    # A POST request to the API
+    response = requests.post(url, json=data)
+    # Print the response
+    print("API Response "+response.json())
 
 
 def highlightFace(net, frame, conf_threshold=0.7):
