@@ -1,0 +1,37 @@
+@use '../base/font' as font;
+
+.MuiDialog-container{
+	.MuiPaper-root{
+		border-radius: 10px;
+		overflow: hidden;
+		max-width:100%;
+		// width:800px;
+	}
+}
+.dialog{
+	&_header{
+		// min-width: 960px;
+		max-width:100%;
+		display: flex;
+		padding:10px;
+		height:56px;
+		h6{
+			color:#FFFFFF;
+			font-size:14px;
+			font-weight: 400;
+		}
+	}
+	&_body{
+		// padding:25px;
+	}
+}
+.dialog_header{
+	h2{
+		font-family: font.$primary_font;
+	}
+}
+.dialog-medium{
+	.MuiDialog-paper{
+		width:800px;
+	}
+}

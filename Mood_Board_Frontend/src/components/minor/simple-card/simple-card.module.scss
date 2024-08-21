@@ -1,0 +1,37 @@
+@mixin shadow-box {
+	box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.bankManage {
+    h6 {
+        font-size: 12px;
+        font-weight: 400;
+        margin-bottom: 10px;
+    }
+    .card {
+        height: calc(100vh - 117px); 
+        @include shadow-box;
+        border-radius: 8px;
+        padding: 20px;
+        overflow-y: auto;
+        .cardHeader {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            height: 38px;
+            h6 {
+                font-size: 16px;
+                font-weight: 700;
+            }
+            .cardHeaderDivision {
+                display: flex;
+                justify-content: flex-end;
+                width: 50%;
+                .searchInput {
+                    margin-right: 10px;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+@use '../../../../styles/scss/partials/base/radius' as radius;
+
+.TextField {
+	width: 100%;
+}
+.error {
+	font-size:12px !important;
+	color:#DC0C0C;
+	position: relative;
+	top:-10px;
+	margin-top: 5px !important;
+	div{
+		color:#DC0C0C !important;
+	}
+}

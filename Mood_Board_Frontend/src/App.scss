@@ -1,0 +1,134 @@
+@use './styles/scss/partials/base/breakpoints';
+@use './styles/scss/partials/base/colors';
+@use './styles/scss/partials/base/font';
+@use './styles/scss/partials/base/radius';
+@use './styles/scss/partials/base/reset';
+@use './styles/scss/partials/base/scrollbar';
+@use './styles/scss/partials/base/typography';
+
+@use './styles/scss/partials/components/button';
+
+@use './styles/scss/partials/layouts/dialog';
+@use './styles/scss/partials/layouts/forms';
+@use './styles/scss/partials/layouts/grids';
+@use './styles/scss/partials/layouts/loader';
+@use './styles/scss/partials/layouts/modal';
+@use './styles/scss/partials/layouts/nav';
+@use './styles/scss/partials/layouts/stepper';
+@use './styles/scss/partials/layouts/table';
+@use './styles/scss/partials/layouts/tabs';
+@use './styles/scss/partials/layouts/toaster';
+
+@use './styles/scss/customize-material.scss';
+@use './styles/scss/theme.scss';
+
+body, .css-qfso29-MuiTypography-root-MuiDialogContentText-root, 
+.TextField .MuiOutlinedInput-root input, 
+.DatePicker .MuiOutlinedInput-root input,
+.TextField label, 
+.DatePicker label{
+	font-family: font.$primary_font !important;
+}
+
+
+.loader {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(#ffffff, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(2px) brightness(60%);
+}
+
+.wrapper_table{
+	th{
+		white-space: nowrap;
+	}
+	.MuiTableContainer-root{
+		max-width:100%;
+		overflow:auto;
+	}
+}
+
+.text-right{
+  text-align: right;
+}
+.nrGridContainer{
+  margin-top:20px;
+  background-color: #F8F8F8;
+  .MuiDataGrid-columnHeaders{
+    background-color: #1739B0;
+    padding:0px 10px;
+  }
+  .MuiDataGrid-virtualScroller{
+    padding:0px 10px;
+    overflow:visible !important;
+  }
+}
+
+.MuiCardHeader-title {
+  font-size: 14px !important;
+  font-weight: 600 !important
+}
+.MuiCardHeader-root {
+  padding-bottom: 0px !important;
+}
+
+
+::-webkit-datetime-edit-year-field:not([aria-valuenow]),
+::-webkit-datetime-edit-month-field:not([aria-valuenow]),
+::-webkit-datetime-edit-day-field:not([aria-valuenow]) {
+    color: transparent;
+}
+
+.customGrid {
+  margin-top:5px;
+  .MuiDataGrid-columnHeaders{
+    background-color: colors.$primary_color !important;
+  }
+}
+
+.MuiDataGrid-main{
+  background-color: #FFFFFF;
+}
+
+.loan_quantum{
+  .MuiFormGroup-root{
+      display: flex;
+      flex-direction: row;
+  }
+  .MuiFormControlLabel-label{
+    font-size: 14px;
+   }
+}
+.MuiAutocomplete-root{
+  width:100% !important;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+.sideNavBar{
+	ul li a.active{
+		opacity: 1;
+		border-color: colors.$secondary_color;
+		background-color: colors.$primary_color;
+	}
+}
+#gauge-chart2 .text-group{
+  display: none;
+}

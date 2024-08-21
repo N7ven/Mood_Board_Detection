@@ -1,0 +1,44 @@
+/* Fonts */
+$secondary_font_path : '../../fonts/Montserrat';
+$primary_font_path   : '../../fonts/Inter';
+
+$font_weight         : ("Light":200, "Regular":300, "Medium":400, "SemiBold":500, "Bold":600, "ExtraBold":700, "Black":800);
+
+$secondary_font      : 'Montserrat';
+$primary_font        : 'Inter';
+
+$default_font_size   : 16px;
+
+
+/* Primary Font */
+@each $name, $app_font in $font_weight{
+	@font-face {
+		font-family: $primary_font;
+		src: url(#{$primary_font_path}/#{$primary_font}-#{$name}.ttf);
+		font-weight: $app_font;
+	}
+}
+
+/* Secondary Font */
+@each $name, $app_font in $font_weight{
+	@font-face {
+		font-family: $secondary_font;
+		src: url(#{$secondary_font_path}/#{$secondary_font}-#{$name}.ttf);
+		font-weight: $app_font;
+	}
+}
+
+
+/* Font Size */
+$font_size_small   : 12px;
+$font_size_regular : 14px;
+$font_size_medium  : 16px;
+
+/* Fonts Weight */
+$font_light     : 200;
+$font_regular   : 300;
+$font_medium    : 400;
+$font_semibold  : 500;
+$font_bold      : 600;
+$font_extrabold : 700;
+$font_black     : 800;

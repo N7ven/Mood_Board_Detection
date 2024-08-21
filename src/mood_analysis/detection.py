@@ -1,4 +1,4 @@
-import cv2
+import cv2, queue, threading, time
 import face_recognition
 import numpy as np
 from deepface import DeepFace  
@@ -6,26 +6,28 @@ import math
 import argparse
 import logging
 import requests 
+import os 
+import base64 
 
 def face_detection(video_capture,cv2):
 
   # Face Detection variable declrations ***************************************
 
   # Load a sample picture and learn how to recognize it.
-  obama_image = face_recognition.load_image_file("files/obama.jpg")
+  obama_image = face_recognition.load_image_file("src/mood_analysis/files/obama.jpg")
   obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
 
   # Load a second sample picture and learn how to recognize it.
-  biden_image = face_recognition.load_image_file("files/biden.jpg")
+  biden_image = face_recognition.load_image_file("src/mood_analysis/files/biden.jpg")
   biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
-  selva_image = face_recognition.load_image_file("files/selva3.jpeg")
+  selva_image = face_recognition.load_image_file("src/mood_analysis/files/selva3.jpeg")
   selva_face_encoding = face_recognition.face_encodings(selva_image)[0]
 
-  kanish_image = face_recognition.load_image_file("files/kanish.jpeg")
+  kanish_image = face_recognition.load_image_file("src/mood_analysis/files/kanish.jpeg")
   kanish_face_encoding = face_recognition.face_encodings(kanish_image)[0]
 
-  narmathaa_image = face_recognition.load_image_file("files/narmathaa.jpeg")
+  narmathaa_image = face_recognition.load_image_file("src/mood_analysis/files/narmathaa.jpeg")
   narmathaa_face_encoding = face_recognition.face_encodings(narmathaa_image)[0]
 
   # Create arrays of known face encodings and their names
@@ -44,6 +46,15 @@ def face_detection(video_capture,cv2):
     "Narmathaa"
   ]
   # Initialize some variables
+  name = ''
+  age = ''
+  gender = ''
+  emotion = ''
+  base64_string = ''
+  left = 0
+  bottom = 0
+  font = 0
+
   face_locations = []
   face_encodings = []
   face_names = []
@@ -53,12 +64,12 @@ def face_detection(video_capture,cv2):
   parser=argparse.ArgumentParser()
   parser.add_argument('--image')
   args=parser.parse_args()
-  faceProto='files/opencv_face_detector.pbtxt'
-  faceModel='files/opencv_face_detector_uint8.pb'
-  ageProto="files/age_deploy.prototxt"
-  ageModel="files/age_net.caffemodel"
-  genderProto="files/gender_deploy.prototxt"
-  genderModel="files/gender_net.caffemodel"
+  faceProto='src/mood_analysis/files/opencv_face_detector.pbtxt'
+  faceModel='src/mood_analysis/files/opencv_face_detector_uint8.pb'
+  ageProto="src/mood_analysis/files/age_deploy.prototxt"
+  ageModel="src/mood_analysis/files/age_net.caffemodel"
+  genderProto="src/mood_analysis/files/gender_deploy.prototxt"
+  genderModel="src/mood_analysis/files/gender_net.caffemodel"
 
   MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)
   ageList=['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
@@ -66,7 +77,6 @@ def face_detection(video_capture,cv2):
 
   logging.info('log'+faceProto)
   logging.info('This is an info message')
-
 
   faceNet=cv2.dnn.readNet(faceModel,faceProto)
   ageNet=cv2.dnn.readNet(ageModel,ageProto)
@@ -83,10 +93,8 @@ def face_detection(video_capture,cv2):
     rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
     # Detect faces in the frame
     faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
-    global top, left, right, bottom
     # Face Detection part of the code ***************************************
     if process_this_frame:
-        
         # Resize frame of video to 1/4 size for faster face recognition processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
@@ -115,14 +123,16 @@ def face_detection(video_capture,cv2):
         # Extract the face ROI (Region of Interest)
         face_roi = rgb_frame[y:y + h, x:x + w]
         # Perform emotion analysis on the face ROI
-        result = DeepFace.analyze(face_roi, actions=['emotion'], enforce_detection=False)
+        #result = DeepFace.analyze(face_roi, actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
+        result = DeepFace.analyze(face_roi, actions=["emotion"], enforce_detection=False)
         # Determine the dominant emotion
         emotion = result[0]['dominant_emotion']
         # # Draw rectangle around face and label with predicted emotion
         #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
         cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+        #print(result[0]['age']," years old ",result[0]["dominant_race"]," ",result[0]["dominant_emotion"]," ", result[0]["gender"])
+        #print(result)
         print(emotion)
-        
     # Face Detection part of the code ****************************************
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
@@ -139,33 +149,39 @@ def face_detection(video_capture,cv2):
         print(name)
 
     # AgeGender part of the code ****************************************
-    # padding=20
-    # resultImg,faceBoxes=highlightFace(faceNet,frame)
-    # if not faceBoxes:
-    #     print("No face detected")
+    padding=20
+    resultImg,faceBoxes=highlightFace(faceNet,frame)
+    if not faceBoxes:
+        print("No face detected")
 
-    # for faceBox in faceBoxes:
-    #     face=frame[max(0,faceBox[1]-padding):
-    #                min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
-    #                :min(faceBox[2]+padding, frame.shape[1]-1)]
+    for faceBox in faceBoxes:
+        face=frame[max(0,faceBox[1]-padding):
+        min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
+        :min(faceBox[2]+padding, frame.shape[1]-1)]
 
-    #     blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
-    #     genderNet.setInput(blob)
-    #     genderPreds=genderNet.forward()
-    #     gender=genderList[genderPreds[0].argmax()]
-    #     print(f'Gender: {gender}')
+        blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
+        genderNet.setInput(blob)
+        genderPreds=genderNet.forward()
+        gender=genderList[genderPreds[0].argmax()]
+        print(f'Gender: {gender}')
 
-    #     ageNet.setInput(blob)
-    #     agePreds=ageNet.forward()
-    #     age=ageList[agePreds[0].argmax()]
-    #     print(f'Age: {age[1:-1]} years')
-    #     #cv2.putText(frame, "           "+gender+"-"+age, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-    #     #cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
-        post_results()
+        ageNet.setInput(blob)
+        agePreds=ageNet.forward()
+        age=ageList[agePreds[0].argmax()]
+        print(f'Age: {age[1:-1]} years')
+        cv2.putText(frame, "           "+gender+"-"+age, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+        #cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
+        cv2.imwrite(os.path.join('Images/convert.png'), frame) 
+        with open("Images/convert.png", "rb") as f:
+            encoded_image = base64.b64encode(f.read())
+            base64_string = encoded_image.decode("utf-8")
+            # print(base64_string)
+    post_results(name,age,gender,emotion,base64_string)
 
     # Display the resulting image
     cv2.imshow('Video', frame)
-
+    # encoded_string = base64.b64encode(face_roi)
+    # print(encoded_string)  
     # Hit 'q' on the keyboard to quit!
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
@@ -174,19 +190,78 @@ def face_detection(video_capture,cv2):
   video_capture.release()
   cv2.destroyAllWindows()
 
-def post_results():
-    # The API endpoint
-    url = "https://jsonplaceholder.typicode.com/posts"
-    # Data to be sent
-    data = {
-    "userID": 1,
-    "title": "Making a POST request",
-    "body": "This is the data we created."
-    }
-    # A POST request to the API
-    response = requests.post(url, json=data)
-    # Print the response
-    print("API Response "+response.json())
+def post_results(name,age,gender,emotion,encoded_image):
+    # * ---------- Initialyse JSON to EXPORT --------- *
+    json_to_export = {}
+    emotion1 = 0
+    emotion2 = 0
+    emotion3 = 0
+    emotion4 = 0
+    emotion5 = 0
+    emotion6 = 0
+
+    if emotion=='neutral':
+        emotion1=1
+        emotion2=0
+        emotion3=0
+        emotion4=0   
+        emotion5=0
+        emotion6=0  
+    if emotion=='happy':
+        emotion1=0
+        emotion2=1
+        emotion3=0
+        emotion4=0
+        emotion5=0
+        emotion6=0 
+    if emotion=='sad':
+        emotion1=0
+        emotion2=0
+        emotion3=1
+        emotion4=0
+        emotion5=0
+        emotion6=0     
+    if emotion=='fear':
+        emotion1=0
+        emotion2=0
+        emotion3=0
+        emotion4=1
+        emotion5=0
+        emotion6=0 
+    if emotion=='angry':
+        emotion1=0
+        emotion2=0
+        emotion3=0
+        emotion4=0
+        emotion5=1
+        emotion6=0 
+    if emotion=='surprise':
+        emotion1=0
+        emotion2=0
+        emotion3=0
+        emotion4=0
+        emotion5=0
+        emotion6=1 
+
+    # * ---------- SAVE data to send to the API -------- *
+    json_to_export['name'] = name
+    json_to_export['age'] = age
+    json_to_export['gender'] = gender
+    json_to_export['emotion_neutral'] = emotion1
+    json_to_export['emotion_happy'] = emotion2
+    json_to_export['emotion_sad'] = emotion3
+    json_to_export['emotion_fear'] = emotion4
+    json_to_export['emotion_angry'] = emotion5
+    json_to_export['emotion_surprised'] = emotion6
+    json_to_export['accuracy'] = '50%'
+    json_to_export['hour'] = f'{time.localtime().tm_hour}:{time.localtime().tm_min}'
+    json_to_export['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
+    json_to_export['picture_array'] = encoded_image
+
+    # * ---------- SEND data to API --------- *
+    #print("Status: ", json_to_export)
+    r = requests.post(url='http://127.0.0.1:5000/receive_data', json=json_to_export)
+    print("Status: ", r.status_code)
 
 
 def highlightFace(net, frame, conf_threshold=0.7):

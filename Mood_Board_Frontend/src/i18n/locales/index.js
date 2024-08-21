@@ -1,0 +1,9 @@
+export { default as en } from './en/translation.json';
+export { default as ta } from './ta/translation.json';
+export { default as hi } from './hi/translation.json';
+export { default as kn } from './kn/translation.json';
+export { default as ml } from './ml/translation.json';
+export { default as mr } from './mr/translation.json';
+export { default as ar } from './ar/translation.json';
+export { default as te } from './te/translation.json';
+export { default as gu } from './te/translation.json';

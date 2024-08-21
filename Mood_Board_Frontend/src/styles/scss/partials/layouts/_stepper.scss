@@ -1,0 +1,27 @@
+.MuiStepLabel-root{
+    .MuiStepLabel-iconContainer{
+        padding:4px !important;
+        border-radius: 50%;
+        border:1px solid #C5C6CA;
+    }
+    .Mui-active{
+        .MuiStepIcon-root{
+            color:#1739B0;
+        }
+        .MuiStepIcon-text{
+            fill: #FFFFFF;
+        }
+    }
+    .MuiStepIcon-root{
+        color:#FFFFFF;
+    }
+    .MuiStepIcon-text{
+        fill: #C5C6CA;
+    }
+    .MuiStepLabel-label{
+        margin-top: 10px !important;
+    }
+    .MuiSvgIcon-root.Mui-completed{
+        color:#24C677 !important;
+    }
+}

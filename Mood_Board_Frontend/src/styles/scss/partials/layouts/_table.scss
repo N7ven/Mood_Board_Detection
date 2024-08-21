@@ -1,0 +1,16 @@
+.pagination{
+	display: flex;
+	justify-content: flex-end;
+	padding:10px 10px 0px;
+	ul{
+		li{
+			button{
+				color:#515151;
+				&.Mui-selected, &.Mui-selected:hover{
+					background-color: #1739B0;
+					color:#FFFFFF;
+				}
+			}
+		}
+	}
+}

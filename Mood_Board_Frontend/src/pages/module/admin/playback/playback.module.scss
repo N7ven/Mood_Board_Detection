@@ -1,0 +1,32 @@
+.playback{
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    padding: 15px;
+    .header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        h4{
+            font-size: 18px;
+            font-weight: 600;
+        }
+    }
+    .gridCont{
+        display: flex;
+        flex-wrap: wrap;
+        margin-left: -1px;
+        margin-right: -1px;
+        .grid{
+            border-radius: 0px;
+            overflow: hidden;
+            width: 33.3%;
+            position: relative;
+            padding-left: 1px;
+            padding-right: 1px;
+            img{
+                width: 100%;
+            }
+        }
+    }
+}

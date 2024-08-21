@@ -1,0 +1,14 @@
+@use '../../../../styles/scss/partials/base/radius' as radius;
+
+.MultiSelectBox{
+	width: 100%;
+}
+.error {
+	font-size: 13px !important;
+	color:#DC0C0C;
+	padding:5px 0px 0px 22px;
+	margin-bottom: 5px 0px 0px 5px !important;
+	div {
+		color:#DC0C0C !important;
+	}
+}
