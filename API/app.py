@@ -61,14 +61,20 @@ def get_receive_data():
             if result:
                print('user IN')
                updated_emotion_happy=row[7]+int(json_data['emotion_happy'])
-               updated_emotion_sad=row[8]+int(json_data['emotion_sad'])
-               updated_emotion_fear=row[9]+int(json_data['emotion_fear'])
+               updated_emotion_fear=row[8]+int(json_data['emotion_fear'])
+               updated_emotion_sad=row[9]+int(json_data['emotion_sad'])
                updated_emotion_surprised=row[10]+int(json_data['emotion_surprised'])
                updated_emotion_neutral=row[11]+int(json_data['emotion_neutral'])
                updated_emotion_angry=row[12]+int(json_data['emotion_angry'])
 
                update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
                cursor.execute(update_user_querry)
+
+            #    insert_user_querry_trends = f"UPDATE users_trends SET name = '{json_data['name']}',age = '{json_data['age']}',gender = '{json_data['gender']}', emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}',accuracy = '{json_data['accuracy']}',date = '{json_data['date']}',arrival_time = '{json_data['hour']}',image64 = '{json_data['picture_array']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+            #    cursor.execute(insert_user_querry_trends)
+
+               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+               cursor.execute(insert_user_querry_trends)
 
             #    image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
             #     # Save image
@@ -110,6 +116,9 @@ def get_receive_data():
                 insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_array']}')"
                 cursor.execute(insert_user_querry)
 
+                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+                cursor.execute(insert_user_querry_trends)
+
         except (Exception, psycopg2.DatabaseError) as error:
             print("ERROR DB: ", error)
         finally:
@@ -143,7 +152,7 @@ def get_employee(name):
 
         # if the user exist in the db:
         if result:
-            print('RESULT: ',result)
+            #print('RESULT: ',result)
             # Structure the data and put the dates in string for the front
             for k,v in enumerate(result):
                 answer_to_send[k] = {}
@@ -174,19 +183,25 @@ def get_5_last_entries():
         # Connect to DB
         connection = DATABASE_CONNECTION()
         cursor = connection.cursor()
+        list_cursor = connection.cursor()
+
         # Query the DB to get all the data of a user:
         lasts_entries_sql_query = f"SELECT * FROM users"
-
         cursor.execute(lasts_entries_sql_query)
         result = list(cursor.fetchall())
+
+        # Query the DB to get all line chart datas
+        line_sql_query = f"SELECT date,arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date,arrival_time order by date,arrival_time"
+        list_cursor.execute(line_sql_query)
+        list_result = list(list_cursor.fetchall())
+
         connection.commit()
 
         # if DB is not empty:
         if result:
-            # print(result)
-            # answer_to_send.append({'Karthee':'Value'})        
-            # print(answer_to_send)
-
+            #print(result)
+            print(list_result)
+            
             # Structure the data and put the dates in string for the front
             keyss=['name','date',"time",'picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64']
             for k, v in enumerate(result):
@@ -194,9 +209,21 @@ def get_5_last_entries():
                 for ko, vo in enumerate(result[k]):
                     answer_to_send_new[keyss[ko]] = str(vo)
                 answer_to_send.append(answer_to_send_new) 
-
         else:
             answer_to_send = {'error': 'error detect'}
+
+        # IT"S FOR LINE CHART if DB is not empty:
+        if list_result:
+            # print(result)
+            # Structure the data and put the dates in string for the front
+            # keyss=['emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry']
+            answer_to_chart=[]
+            for k, v in enumerate(list_result):
+                answer_to_chart.append(list_result[k])
+        else:
+            answer_to_chart = {'error': 'error detect'}
+
+        list_response={'answer_to_send':answer_to_send,'answer_to_chart':answer_to_chart}
 
     except (Exception, psycopg2.DatabaseError) as error:
         print("ERROR DB: ", error)
@@ -204,10 +231,11 @@ def get_5_last_entries():
         # closing database connection:
         if (connection):
             cursor.close()
+            list_cursor.close()
             connection.close()
 
     # Return the user's data to the front
-    return jsonify(answer_to_send)
+    return jsonify(list_response)
 
 
 # * ---------- Add new employee ---------- *

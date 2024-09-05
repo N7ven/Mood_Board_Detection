@@ -3,6 +3,13 @@ import AuthActionType from './auth-action-types';
 import query from '../../services/api/api-service';
 import { showSuccessMessage } from '../../utils/toster';
 
+const setOldReport = (data) => {
+  return {
+    type: AuthActionType.SET_OLD_REPORT,
+    data
+  };
+};
+
 const authLoginRequest = () => ({ type: AuthActionType.AUTH_LOGIN_REQUEST });
 const authLoginSuccess = (data) => {
   return {
@@ -10,6 +17,8 @@ const authLoginSuccess = (data) => {
     payload: data
   };
 };
+
+
 
 const authLoginFailure = (error) => {
   return {
@@ -195,5 +204,6 @@ export {
   resetUserPassword,
   passwordIdValidation,
   fetchCurrentUser,
-  logoutAll
+  logoutAll,
+  setOldReport
 };

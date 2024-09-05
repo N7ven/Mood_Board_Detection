@@ -4,27 +4,41 @@ import ReactApexChart from 'react-apexcharts';
 import styles from './chart.module.scss';
 import DateRangePickerComp from '../react-date-range/react-date-range';
 
-const LineCharts = () => {
+const LineCharts = ({data}) => {
+  console.log("chart_value",data)
   const series = [{
     name: 'Happy',
-    data: [ 10, 41, 35, 51, 49, 62, 69, 91, 67, 17, 56, 34, 98 ]
+    data: []
   },
   {
     name: 'Surprised',
-    data: [ 30, 52, 16, 38, 62, 78, 83, 23, 56, 23, 67, 34, 87 ]
+    data: []
   },
   {
     name: 'Confused',
-    data: [ 23, 72, 46, 76, 12, 32, 87, 28, 34, 67, 34, 56, 23 ]
+    data: []
   },
   {
     name: 'Disgusted',
-    data: [ 15, 34, 86, 45, 25, 73, 45, 53, 52, 34, 67, 12, 87 ]
+    data: []
   },
   {
     name: 'Contempt',
-    data: [ 27, 25, 87, 35, 76, 56, 24, 74, 76, 45, 87, 34, 67 ]
+    data: []
   }];
+
+
+  const xaxis_time=[]
+
+  for (let i = 1; i < data.length; i++) { 
+    xaxis_time.push(data[i][1])
+    series[0].data.push(data[i][2])
+    series[1].data.push(data[i][3])
+    series[2].data.push(data[i][4])
+    series[3].data.push(data[i][5])
+    series[4].data.push(data[i][6])
+  } 
+
   const options = {
     chart: {
       height: 350,
@@ -51,7 +65,7 @@ const LineCharts = () => {
       }
     },
     xaxis: {
-      categories: [ '10:00 AM', '11:00 AM', '12:00 PM', '1:00 PM', '2:00  PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM', '9:00 PM', '10:00 PM' ]
+      categories:xaxis_time
     }
   };
 
@@ -60,8 +74,10 @@ const LineCharts = () => {
       <div className={styles.filter}>
         <DateRangePickerComp />
       </div>
-      <div id="chart">
+      <div className={styles.chartwrapper}>
+      <div id="chart" className={styles.chart}>
         <ReactApexChart options={options} series={series} type="line" height={350} />
+      </div>
       </div>
     </div>
   );

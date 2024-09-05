@@ -8,3 +8,4 @@ export const getIsValidRequest = (state) => state.auth.validId;
 export const getPasswordIdSuccess = (state) => state.auth.passwordIdTest;
 export const getUpdatePasswordSuccess = (state) => state.auth.updatePasswordSuccess;
 export const getKeyclockRequest = (state) => state.auth.authRequest;
+export const getOldReportValue = (state) => state.auth.OldReport;

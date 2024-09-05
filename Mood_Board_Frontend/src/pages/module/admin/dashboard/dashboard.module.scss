@@ -13,7 +13,8 @@
             gap: 10px;
 
             .moodList{
-                width:250px;
+                width:210px;
+                flex-shrink: 0;
                 li{
                     width:100%;
                     height: 56px;
@@ -335,13 +336,33 @@
 }
 .tab_container{
     margin-top: 5px;
+    position: relative;
 }
 
 .today_report{
     display: flex;
-    
+    .animated{
+        animation-name: emoj-animation;
+        animation-duration: .5s;
+        animation-timing-function: linear;
+        animation-delay: 0s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+    }
+    @keyframes emoj-animation {
+        0%{
+            transform:rotate(45deg) scale(1.2,1.2)
+            // transform:scale(1.5,1.5)
+        }
+        50%{
+            transform:rotate(0deg) scale(1,1)
+            // transform:scale(1,1)
+        }
+    }
     .customer_details{
         width: 250px;
+        position: relative;
+    
         .pro_detail{
             padding-left: 15px;
             margin-top: 10px;
@@ -590,4 +611,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.BG_IMAGE{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.customer_detail{
+    position: relative;
+    overflow: hidden;
 }

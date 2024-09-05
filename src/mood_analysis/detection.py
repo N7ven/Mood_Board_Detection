@@ -176,7 +176,7 @@ def face_detection(video_capture,cv2):
             encoded_image = base64.b64encode(f.read())
             base64_string = encoded_image.decode("utf-8")
             # print(base64_string)
-    post_results(name,age,gender,emotion,base64_string)
+        post_results(name,age,gender,emotion,base64_string)
 
     # Display the resulting image
     cv2.imshow('Video', frame)
@@ -254,7 +254,7 @@ def post_results(name,age,gender,emotion,encoded_image):
     json_to_export['emotion_angry'] = emotion5
     json_to_export['emotion_surprised'] = emotion6
     json_to_export['accuracy'] = '50%'
-    json_to_export['hour'] = f'{time.localtime().tm_hour}:{time.localtime().tm_min}'
+    json_to_export['hour'] = f'{time.localtime().tm_hour}:{time.localtime().tm_min}:{time.localtime().tm_sec}'
     json_to_export['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
     json_to_export['picture_array'] = encoded_image
 

@@ -18,7 +18,8 @@ const initialState = {
   updatePasswordSuccess: false,
   passwordIdTest: false,
   validId: undefined,
-  authRequest: defaultRequestState()
+  authRequest: defaultRequestState(),
+  OldReport:{}
 };
 
 export default (state = initialState, actions) => {
@@ -111,6 +112,10 @@ export default (state = initialState, actions) => {
         loading: false,
         updatePasswordSuccess: true,
         request: defaultSuccessState(true)
+      });
+    case AuthActionType.SET_OLD_REPORT:
+      return updateState(state, {
+        OldReport:actions.data
       });
 
     default: return state;

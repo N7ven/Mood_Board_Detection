@@ -17,6 +17,13 @@ export default {
   TWOFACTOR: require('./images/icons/twofactor.svg').default,
   COLLAPSE: require('./images/icons/collapse.svg').default,
 
+  HAPPY_BG: require('./images/removable/happy.svg').default,
+  SURPRISED_BG: require('./images/removable/surprised.svg').default,
+  DISGUSTED_BG: require('./images/removable/disgusted.svg').default,
+  CONTEMPT_BG: require('./images/removable/contempt.svg').default,
+  CONFUSED_BG: require('./images/removable/confused.svg').default,
+
+
   HAPPY: require('./images/emoji/happy.svg').default,
   SURPRISED: require('./images/emoji/surprised.svg').default,
   CONFUSED: require('./images/emoji/confused.svg').default,

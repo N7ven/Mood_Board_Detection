@@ -2,6 +2,8 @@ import React,{useState,useEffect} from 'react';
 import Images from 'assets/Images';
 import LineCharts from 'components/minor/chart/line';
 import DateRangePickerComp from 'components/minor/react-date-range/react-date-range';
+import Webcam from "react-webcam";
+import ReactDOM from 'react-dom';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -24,9 +26,16 @@ const Dashboard = () => {
   // Bala Code
   const [ value, setValue ] = React.useState('1');
   const [todayReport, setTodayReport] = useState([]);
+  const [todayReportChart, setTodayReportChart] = useState([]);
+
   const [selectedTodayReport, setSelectedTodayReport] = useState();
   const [selectedReportIndex, setSelectedReportIndex] = useState(0);
   const [indexId, setIndexId] = useState(null);
+  const videoConstraints = {
+    width: { min: 480 },
+    height: { min: 720 },
+    aspectRatio: 0.6666666667
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -54,12 +63,17 @@ const Dashboard = () => {
     fetch('http://127.0.0.1:5000/get_users_data')
   .then(response => response.json())
   .then(response => {
-      if(response && response.length>0) {
-          console.log(response)
-          setTodayReport(response)
-          console.log(selectedReportIndex)
-          setSelectedTodayReport(response[selectedReportIndex])
+    console.log("User Response",response)
+      if(response.answer_to_send && response.answer_to_send.length>0) {
+          setTodayReport(response.answer_to_send)
+          console.log("Old",selectedTodayReport)
+          console.log("New",response.answer_to_send[selectedReportIndex])
+          setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
       }
+      // Chart Data Fetch
+      if(response.answer_to_chart && response.answer_to_chart.length>0) {
+        setTodayReportChart(response.answer_to_chart)
+      }      
   })
   };
 
@@ -71,10 +85,6 @@ const Dashboard = () => {
     angry_count+=parseInt(todayReport[i]?.emotion_angry)
     fear_count+=parseInt(todayReport[i]?.emotion_fear)
   } 
-  // todayReport.forEach((todayReport, index) => {
-  // happy_count=happy_count+todayReport[index]?.emotion_happy
-  // console.log(todayReport[index]?.emotion_happy)
-  // });
 
   return (
     <div className={styles.dashboard_container}>
@@ -145,7 +155,7 @@ const Dashboard = () => {
             </li>
           </ul>
           <div className={styles.emotTrend}>
-            <LineCharts />
+            <LineCharts data={todayReportChart}/>
           </div>
         </div>
         <div className={styles.customer_data}>
@@ -286,6 +296,7 @@ const Dashboard = () => {
             </ul>
           </div>
           <div className={`${styles.customer_detail} ${styles.happy}`}>
+            {/* <img className={styles.BG_IMAGE} src={Images.CONFUSED_BG}/> */}
             <header>
               <h3>{selectedTodayReport?.name}</h3>
               <DateRangePickerComp />
@@ -323,7 +334,13 @@ const Dashboard = () => {
         <ul className={styles.cameraList}>
           <li>
             <a>
-              <img src={GIF004} alt="Camera01" />
+               {/* <img src={GIF004} alt="Camera01" />  */}
+                {<Webcam 
+                 width={300}
+                 height={220}
+                 aspectRatio={10}
+                />}
+
               <span>CAM001</span>
             </a>
             <ul>

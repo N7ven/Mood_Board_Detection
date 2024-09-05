@@ -10,6 +10,56 @@ const TodayReport = ({data}) => {
   const [mxIndex, setMxIndex] = useState(0);
   const [emotionIndex, setEmotionIndex] = useState(0);
 
+  const getbgimage=() => {
+    const key=emotionValue[emotionIndex]
+    console.log("KEY",key)
+    switch (key) {
+      case "HAPPY":
+        return Images.HAPPY_BG
+      case "SURPRISED":
+        return Images.SURPRISED_BG
+      case "CONFUSED":
+        return Images.CONFUSED_BG
+      case "DISGUSTED":
+        return Images.DISGUSTED_BG
+      case "CONTEMPT":
+        return Images.CONTEMPT_BG          
+      default :
+      return Images.HAPPY_BG
+    }
+  }
+  const getsmileye=(smile) => {
+
+    const key=emotionValue[emotionIndex]
+    console.log("KEY",key)
+    if(key=="HAPPY" && smile=="hap")
+      return styles.animated
+    if(key=="SURPRISED" && smile=="sur")
+      return styles.animated
+    if(key=="CONFUSED" && smile=="con")
+      return styles.animated
+    if(key=="DISGUSTED" && smile=="cont")
+      return styles.animated
+    if(key=="CONTEMPT" && smile=="cont")
+      return styles.animated
+    else
+      return null       
+    
+    // switch (key) {
+    //   case "HAPPY" & smile=="hap":
+    //     return styles.animated
+    //   case "SURPRISED" & smile=='sur':
+    //     return styles.animated
+    //   case "CONFUSED" & smile=='con':
+    //     return styles.animated
+    //   case "DISGUSTED" & smile=='cont':
+    //     return styles.animated
+    //   case "CONTEMPT" & smile=='cont':
+    //     return styles.animated  
+    //   default :
+    //     return null       
+    // }
+  }
   const indexOfMax = (arr) => { 
     let maxIndex = 0; 
     for (let i = 1; i < arr.length; i++) { 
@@ -40,8 +90,11 @@ const TodayReport = ({data}) => {
     if(emotionsArray.length>0){findIndexValue();}
   }, [emotionsArray]);
   console.log(mxIndex)
+
+ 
   return (
     <div className={styles.today_report}>
+      <img className={styles.BG_IMAGE} src={getbgimage()}/>
       <div className={styles.reports}>
         <ul>
           <li className={styles.happy}>
@@ -49,8 +102,8 @@ const TodayReport = ({data}) => {
             <h3>
               {data?.emotion_happy}
               <span>55 %</span>
-            </h3>
-            <img src={Images.HAPPY_ACTIVE} alt="Happy" width="30" />
+            </h3> 
+            <img className={getsmileye("hap")} src={Images.HAPPY_ACTIVE } alt="Happy" width="30" />
           </li>
           <li className={styles.surprised}>
             <p>Surprised</p>
@@ -58,7 +111,7 @@ const TodayReport = ({data}) => {
             {data?.emotion_surprised}
               <span>22 %</span>
             </h3>
-            <img src={Images.SURPRISED_ACTIVE} alt="Surprised" width="30" />
+            <img className={getsmileye("sur")} src={Images.SURPRISED_ACTIVE} alt="Surprised" width="30" />
           </li>
           <li className={styles.confused}>
             <p>Confused</p>
@@ -66,7 +119,7 @@ const TodayReport = ({data}) => {
             {data?.emotion_sad}
               <span>12 %</span>
             </h3>
-            <img src={Images.CONFUSED_ACTIVE} alt="Confused" width="30" />
+            <img className={getsmileye("con")} src={Images.CONFUSED_ACTIVE} alt="Confused" width="30" />
           </li>
           <li className={styles.disgusted}>
             <p>Disgusted</p>
@@ -74,15 +127,15 @@ const TodayReport = ({data}) => {
             {data?.emotion_fear}
               <span>7 %</span>
             </h3>
-            <img src={Images.DISGUSTED_ACTIVE} alt="Disgusted" width="30" />
+            <img className={getsmileye("dis")} src={Images.DISGUSTED_ACTIVE} alt="Disgusted" width="30" />
           </li>
-          <li className={styles.contempt}>
+          <li className={styles.contempt}>  
             <p>Contempt</p>
             <h3>
             {data?.emotion_angry}
               <span>10 %</span>
             </h3>
-            <img src={Images.CONTEMPT_ACTIVE} alt="Contempt" width="30" />
+            <img className={getsmileye("cont")} src={Images.CONTEMPT_ACTIVE} alt="Contempt" width="30" />
           </li>
         </ul>
         <section className={styles.chart_container}>
@@ -96,6 +149,7 @@ const TodayReport = ({data}) => {
             percent={mxIndex}
             cornerRadius={3}
             arcPadding={0.02}
+            animate={false} 
           />
           <svg width="314" height="157" viewBox="0 0 314 157" fill="none" className={styles.gradient}>
             <g clipPath="url(#clip0_245_532)">

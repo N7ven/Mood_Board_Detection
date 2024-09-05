@@ -30,6 +30,12 @@ body, .css-qfso29-MuiTypography-root-MuiDialogContentText-root,
 	font-family: font.$primary_font !important;
 }
 
+.custom_tab {
+  .MuiTabs-root{
+    position: relative;
+    z-index:100;
+    }
+}
 
 .loader {
   width: 100%;
