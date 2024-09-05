@@ -1,0 +1,16 @@
+version: '2.3'
+
+services:
+  face_recognition:
+    image: mood_board_detection
+    container_name: mood_board_detection
+    working_dir: /mood_board_detection/src
+    build:
+      context: .
+      #Uncomment this line to run the example on the GPU (requires Nvidia-Docker)
+      # dockerfile: Dockerfile.gpu 
+    command: python3 -u main.py
+    volumes:
+      - ./:/mood_board_detection
+    #Uncomment this line to run the example on the GPU (requires Nvidia-Docker)
+    # runtime: nvidia
