@@ -4,6 +4,7 @@ import LineCharts from 'components/minor/chart/line';
 import DateRangePickerComp from 'components/minor/react-date-range/react-date-range';
 import Webcam from "react-webcam";
 import ReactDOM from 'react-dom';
+import { Buffer } from 'buffer';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
@@ -23,6 +24,8 @@ import styles from './dashboard.module.scss';
 
 
 const Dashboard = () => {
+  // @ts-ignore
+  window.Buffer = Buffer;
   // Bala Code
   const [ value, setValue ] = React.useState('1');
   const [todayReport, setTodayReport] = useState([]);
@@ -31,6 +34,14 @@ const Dashboard = () => {
   const [selectedTodayReport, setSelectedTodayReport] = useState();
   const [selectedReportIndex, setSelectedReportIndex] = useState(0);
   const [indexId, setIndexId] = useState(null);
+  const webcamRef = React.useRef(null);
+  const capture = React.useCallback(
+    () => {
+      const imageSrc = webcamRef.current.getScreenshot();
+      console.log("image source", imageSrc)
+    },
+    [webcamRef]
+  );
   const videoConstraints = {
     width: { min: 480 },
     height: { min: 720 },
@@ -64,6 +75,16 @@ const Dashboard = () => {
   .then(response => response.json())
   .then(response => {
     console.log("User Response",response)
+    const imageSrc = webcamRef.current.getScreenshot();
+    // var fs = require('browserify-fs');
+    // // Grab the extension to resolve any image error
+    // var ext = imageSrc.split(';')[0].match(/jpeg|png|gif/)[0];
+    // // strip off the data: url prefix to get just the base64-encoded bytes
+    // var data = imageSrc.replace(/^data:image\/\w+;base64,/, "");
+    // var buf = new Buffer.from(imageSrc, 'base64');
+    // fs.writeFile('image.' + ext, buf);
+    // console.log("image source", path)
+
       if(response.answer_to_send && response.answer_to_send.length>0) {
           setTodayReport(response.answer_to_send)
           console.log("Old",selectedTodayReport)
@@ -335,12 +356,14 @@ const Dashboard = () => {
           <li>
             <a>
                {/* <img src={GIF004} alt="Camera01" />  */}
+
                 {<Webcam 
                  width={300}
                  height={220}
+                 ref={webcamRef}
+                 screenshotFormat="image/jpeg"
                  aspectRatio={10}
                 />}
-
               <span>CAM001</span>
             </a>
             <ul>
