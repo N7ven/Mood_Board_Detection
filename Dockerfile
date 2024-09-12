@@ -43,8 +43,8 @@ RUN cd ~ && \
 
 COPY . /root/mood_board_detection
 RUN cd /root/mood_board_detection && \
-    pip3 install -r requirements.txt && \
-    python3 setup.py install
+    pip3 install -r requirements.txt
+#    python3 setup.py install
 
 # Add pip3 install opencv-python==4.1.2.30 if you want to run the live webcam examples
 

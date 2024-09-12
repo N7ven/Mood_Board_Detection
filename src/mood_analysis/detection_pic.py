@@ -14,20 +14,20 @@ def face_detection(cv2):
   # Face Detection variable declrations ***************************************
 
   # Load a sample picture and learn how to recognize it.
-  obama_image = face_recognition.load_image_file("src/mood_analysis/files/obama.jpg")
+  obama_image = face_recognition.load_image_file("files/obama.jpg")
   obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
 
   # Load a second sample picture and learn how to recognize it.
-  biden_image = face_recognition.load_image_file("src/mood_analysis/files/biden.jpg")
+  biden_image = face_recognition.load_image_file("files/biden.jpg")
   biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
-  selva_image = face_recognition.load_image_file("src/mood_analysis/files/selva3.jpeg")
+  selva_image = face_recognition.load_image_file("files/selva3.jpeg")
   selva_face_encoding = face_recognition.face_encodings(selva_image)[0]
 
-  kanish_image = face_recognition.load_image_file("src/mood_analysis/files/kanish.jpeg")
+  kanish_image = face_recognition.load_image_file("files/kanish.jpeg")
   kanish_face_encoding = face_recognition.face_encodings(kanish_image)[0]
 
-  narmathaa_image = face_recognition.load_image_file("src/mood_analysis/files/narmathaa.jpeg")
+  narmathaa_image = face_recognition.load_image_file("files/narmathaa.jpeg")
   narmathaa_face_encoding = face_recognition.face_encodings(narmathaa_image)[0]
 
   # Create arrays of known face encodings and their names
@@ -64,12 +64,12 @@ def face_detection(cv2):
   parser=argparse.ArgumentParser()
   parser.add_argument('--image')
   args=parser.parse_args()
-  faceProto='src/mood_analysis/files/opencv_face_detector.pbtxt'
-  faceModel='src/mood_analysis/files/opencv_face_detector_uint8.pb'
-  ageProto="src/mood_analysis/files/age_deploy.prototxt"
-  ageModel="src/mood_analysis/files/age_net.caffemodel"
-  genderProto="src/mood_analysis/files/gender_deploy.prototxt"
-  genderModel="src/mood_analysis/files/gender_net.caffemodel"
+  faceProto='files/opencv_face_detector.pbtxt'
+  faceModel='files/opencv_face_detector_uint8.pb'
+  ageProto="files/age_deploy.prototxt"
+  ageModel="files/age_net.caffemodel"
+  genderProto="files/gender_deploy.prototxt"
+  genderModel="files/gender_net.caffemodel"
 
   MODEL_MEAN_VALUES=(78.4263377603, 87.7689143744, 114.895847746)
   ageList=['(0-2)', '(4-6)', '(8-12)', '(15-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
