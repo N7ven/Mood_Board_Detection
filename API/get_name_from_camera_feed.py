@@ -106,7 +106,7 @@ while True:
                 # * ---------- SEND data to API --------- *
 
 
-                r = requests.post(url='http://127.0.0.1:5000/receive_data', json=json_to_export)
+                r = requests.post(url='http://74.225.150.213:5000/receive_data', json=json_to_export)
                 print("Status: ", r.status_code)
 
             face_names.append(name)

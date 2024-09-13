@@ -71,7 +71,7 @@ const Dashboard = () => {
   }, [selectedReportIndex]);
 
   const fetchUserData = () => {
-    fetch('http://127.0.0.1:5000/get_users_data')
+    fetch('http://74.225.150.213:5000/get_users_data')
   .then(response => response.json())
   .then(response => {
     console.log("User Response",response)
