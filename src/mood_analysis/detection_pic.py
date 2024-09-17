@@ -87,7 +87,7 @@ def face_detection(cv2):
     # Emotion Detection part of the code***************************************
     # Grab a single frame of video
     # ret, frame = video_capture.read()
-    frame = face_recognition.load_image_file('Images/Selva.png')
+    frame = face_recognition.load_image_file('Images/profile.png')
     # Convert frame to grayscale
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Convert grayscale frame to RGB format
@@ -124,7 +124,7 @@ def face_detection(cv2):
         face_roi = rgb_frame[y:y + h, x:x + w]
         # Perform emotion analysis on the face ROI
         #result = DeepFace.analyze(face_roi, actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
-        result = DeepFace.analyze(img_path = "Images/Selva.png", actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
+        result = DeepFace.analyze(img_path = "Images/profile.png", actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
         # Determine the dominant emotion
         emotion = result[0]['dominant_emotion']
         age = result[0]['age']
