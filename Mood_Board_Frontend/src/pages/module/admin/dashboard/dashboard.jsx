@@ -54,6 +54,7 @@ const Dashboard = () => {
   
   const startInterval = () => {
     const intervalId=setInterval(() => {
+      updateImage()
       fetchUserData()
     }, 5000);
     setIndexId(intervalId)
