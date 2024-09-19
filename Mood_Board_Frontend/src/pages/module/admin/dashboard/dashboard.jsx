@@ -54,6 +54,7 @@ const Dashboard = () => {
   
   const startInterval = () => {
     const intervalId=setInterval(() => {
+      updateImage()
       fetchUserData()
     }, 5000);
     setIndexId(intervalId)
@@ -98,6 +99,31 @@ const Dashboard = () => {
   })
   };
 
+  const updateImage = () => {
+    // Using Fetch API
+    let imageSrc = webcamRef.current.getScreenshot();
+    imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
+    console.log("ImageStr",imageSrc)
+    fetch('http://74.225.150.213:5000/receive_image', {
+    method: 'POST',
+    body: JSON.stringify({
+    // Add parameters here
+    image64: imageSrc
+    }),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+    }
+  })
+   .then((response) => response.json())
+   .then((data) => {
+      console.log(data);
+      // Handle data
+   })
+   .catch((err) => {
+      console.log(err.message);
+   });
+ };
+  
   let happy_count=0,surprised_count=0,sad_count=0,angry_count=0,fear_count=0;
   for (let i = 0; i < todayReport.length; i++) {
     happy_count+=parseInt(todayReport[i]?.emotion_happy)
@@ -356,10 +382,9 @@ const Dashboard = () => {
           <li>
             <a>
                {/* <img src={GIF004} alt="Camera01" />  */}
-
                 {<Webcam 
-                 width={300}
-                 height={220}
+                 width={500}
+                 height={400}
                  ref={webcamRef}
                  screenshotFormat="image/jpeg"
                  aspectRatio={10}
