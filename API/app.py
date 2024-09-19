@@ -133,6 +133,21 @@ def get_receive_data():
         # Return user's data to the front
         return jsonify(json_data)
 
+# * ---------- Get data from the face recognition ---------- *
+@app.route('/receive_image', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def get_receive_image():
+    if request.method == 'POST':
+        json_data = request.get_json()
+        # print('RECEIVE_IMAGE',json_data['image64'])
+        imgdata = base64.b64decode(json_data['image64'])
+        # print('imgdata',imgdata)
+
+        with open('Images/profile.png', "wb") as f: 
+         f.write(imgdata)
+        # cv2.imwrite(os.path.join('Images/convert.png'), json_data['image64']) 
+        # Return user's data to the front
+        return jsonify(json_data)
 
 # * ---------- Get all the data of an employee ---------- *
 @app.route('/get_employee/<string:name>', methods=['GET'])
@@ -200,7 +215,7 @@ def get_5_last_entries():
         # if DB is not empty:
         if result:
             #print(result)
-            print(list_result)
+            #print(list_result)
             
             # Structure the data and put the dates in string for the front
             keyss=['name','date',"time",'picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64']
