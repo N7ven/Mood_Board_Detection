@@ -41,7 +41,7 @@ const Dashboard = () => {
         let imageSrc = webcamRef.current.getScreenshot();
         imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
         console.log("ImageStr",imageSrc)
-        fetch('http://127.0.0.1:5000/receive_image', {
+        fetch('http://74.225.150.213:5000/receive_image', {
         method: 'POST',
         body: JSON.stringify({
         // Add parameters here
@@ -87,7 +87,7 @@ const Dashboard = () => {
   };
 
   const fetchUserData = () => {
-  fetch('http://127.0.0.1:5000/get_users_data')
+  fetch('http://74.225.150.213:5000/get_users_data')
   .then(response => response.json())
   .then(response => {
     console.log("User Response",response)
