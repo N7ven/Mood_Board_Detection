@@ -26,11 +26,11 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 # * ---------- DATABASE CONFIG --------- *
-DATABASE_USER = 'postgres'
-DATABASE_PASSWORD = 'admin'
-DATABASE_HOST = 'localhost'
+DATABASE_USER = 'admin'
+DATABASE_PASSWORD = 'password1234'
+DATABASE_HOST = '74.225.150.213'
 DATABASE_PORT = '5432'
-DATABASE_NAME = 'Mood_Board'
+DATABASE_NAME = 'face_detect'
 
 def DATABASE_CONNECTION():
     return psycopg2.connect(user=DATABASE_USER,
