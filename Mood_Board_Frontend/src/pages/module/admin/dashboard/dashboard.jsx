@@ -34,19 +34,42 @@ const Dashboard = () => {
   const [selectedTodayReport, setSelectedTodayReport] = useState();
   const [selectedReportIndex, setSelectedReportIndex] = useState(0);
   const [indexId, setIndexId] = useState(null);
-  const webcamRef = React.useRef(null);
-  const capture = React.useCallback(
-    () => {
-      const imageSrc = webcamRef.current.getScreenshot();
-      console.log("image source", imageSrc)
-    },
-    [webcamRef]
-  );
-  const videoConstraints = {
-    width: { min: 480 },
-    height: { min: 720 },
-    aspectRatio: 0.6666666667
-  };
+    const webcamRef = React.useRef(null);
+
+    useEffect(() => {
+      setInterval(() => {
+        let imageSrc = webcamRef.current.getScreenshot();
+        imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
+        console.log("ImageStr",imageSrc)
+        fetch('http://127.0.0.1:5000/receive_image', {
+        method: 'POST',
+        body: JSON.stringify({
+        // Add parameters here
+        image64: imageSrc
+        }),
+        headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+       }
+      })
+      .then((response) => response.json())
+      .then((data) => {
+      console.log(data);
+      // Handle Fetch data
+
+      })
+      .catch((err) => {
+      console.log(err.message);
+      });
+      }, 5000);
+    }, [])
+
+    useEffect(() => {
+      if(indexId){
+      clrInterval()
+      }
+      startInterval()
+      }, [selectedReportIndex]);
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -54,9 +77,8 @@ const Dashboard = () => {
   
   const startInterval = () => {
     const intervalId=setInterval(() => {
-      updateImage()
-      fetchUserData()
-    }, 5000);
+       fetchUserData()
+    }, 7000);
     setIndexId(intervalId)
   };
 
@@ -64,28 +86,11 @@ const Dashboard = () => {
     clearInterval(indexId)
   };
 
-   useEffect(() => {
-    if(indexId){
-      clrInterval()
-    }
-   startInterval()
-  }, [selectedReportIndex]);
-
   const fetchUserData = () => {
-    fetch('http://74.225.150.213:5000/get_users_data')
+  fetch('http://127.0.0.1:5000/get_users_data')
   .then(response => response.json())
   .then(response => {
     console.log("User Response",response)
-    const imageSrc = webcamRef.current.getScreenshot();
-    // var fs = require('browserify-fs');
-    // // Grab the extension to resolve any image error
-    // var ext = imageSrc.split(';')[0].match(/jpeg|png|gif/)[0];
-    // // strip off the data: url prefix to get just the base64-encoded bytes
-    // var data = imageSrc.replace(/^data:image\/\w+;base64,/, "");
-    // var buf = new Buffer.from(imageSrc, 'base64');
-    // fs.writeFile('image.' + ext, buf);
-    // console.log("image source", path)
-
       if(response.answer_to_send && response.answer_to_send.length>0) {
           setTodayReport(response.answer_to_send)
           console.log("Old",selectedTodayReport)
@@ -99,30 +104,30 @@ const Dashboard = () => {
   })
   };
 
-  const updateImage = () => {
-    // Using Fetch API
-    let imageSrc = webcamRef.current.getScreenshot();
-    imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
-    console.log("ImageStr",imageSrc)
-    fetch('http://74.225.150.213:5000/receive_image', {
-    method: 'POST',
-    body: JSON.stringify({
-    // Add parameters here
-    image64: imageSrc
-    }),
-    headers: {
-      'Content-type': 'application/json; charset=UTF-8',
-    }
-  })
-   .then((response) => response.json())
-   .then((data) => {
-      console.log(data);
-      // Handle data
-   })
-   .catch((err) => {
-      console.log(err.message);
-   });
- };
+//   const updateImage = () => {
+//     // Using Fetch API
+//     let imageSrc = webcamRef.current.getScreenshot();
+//     imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
+//     console.log("ImageStr",imageSrc)
+//     fetch('http://127.0.0.1:5000/receive_image', {
+//     method: 'POST',
+//     body: JSON.stringify({
+//     // Add parameters here
+//     image64: imageSrc
+//     }),
+//     headers: {
+//       'Content-type': 'application/json; charset=UTF-8',
+//     }
+//   })
+//    .then((response) => response.json())
+//    .then((data) => {
+//       console.log(data);
+//       // Handle data
+//    })
+//    .catch((err) => {
+//       console.log(err.message);
+//    });
+//  };
   
   let happy_count=0,surprised_count=0,sad_count=0,angry_count=0,fear_count=0;
   for (let i = 0; i < todayReport.length; i++) {
@@ -383,11 +388,18 @@ const Dashboard = () => {
             <a>
                {/* <img src={GIF004} alt="Camera01" />  */}
                 {<Webcam 
-                 width={500}
-                 height={400}
+                 width='100%'
+                 height='100%'
+                 screenshotFormat="image/jpeg"
+                 aspectRatio={10}
+                />}
+                {<Webcam 
+                 width={1000}
+                 height={800}
                  ref={webcamRef}
                  screenshotFormat="image/jpeg"
                  aspectRatio={10}
+                 style={{opacity: 1, flex:1, position:'absolute', zIndex:0}}
                 />}
               <span>CAM001</span>
             </a>
