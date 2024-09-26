@@ -49,4 +49,4 @@ RUN cd /root/mood_board_detection && \
 # Add pip3 install opencv-python==4.1.2.30 if you want to run the live webcam examples
 
 CMD cd /root/mood_board_detection/src/mood_analysis && \
-    python3 main.py
+    python3 recognition_api.py

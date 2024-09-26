@@ -1,3 +1,6 @@
+flask
+flask-cors
+psycopg2-binary
 face_recognition_models
 Click>=6.0
 dlib>=19.3.0
@@ -9,3 +12,5 @@ requests
 face_recognition
 deepface
 tf-keras
+
+
