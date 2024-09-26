@@ -84,9 +84,14 @@ def face_detection(video_capture,cv2):
 
   while True:
 
+    # IP Camera access***************************************
+    url = 'rtsp://192.168.29.152:8080/h264_opus.sdp'
+    cap = cv2.VideoCapture(url)
+    ret, frame = cap.read()
+
     # Emotion Detection part of the code***************************************
     # Grab a single frame of video
-    ret, frame = video_capture.read()
+    # ret, frame = video_capture.read()
     # Convert frame to grayscale
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Convert grayscale frame to RGB format
