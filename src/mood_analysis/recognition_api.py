@@ -208,20 +208,20 @@ def face_detection(cv2,imgdata):
   # Face Detection variable declrations ***************************************
 
   # Load a sample picture and learn how to recognize it.
-  obama_image = face_recognition.load_image_file("files/obama.jpg")
+  obama_image = face_recognition.load_image_file("files/Jesus.png")
   obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
 
   # Load a second sample picture and learn how to recognize it.
-  biden_image = face_recognition.load_image_file("files/biden.jpg")
+  biden_image = face_recognition.load_image_file("files/Peter.png")
   biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
   selva_image = face_recognition.load_image_file("files/selva3.jpeg")
   selva_face_encoding = face_recognition.face_encodings(selva_image)[0]
 
-  kanish_image = face_recognition.load_image_file("files/kanish.jpeg")
+  kanish_image = face_recognition.load_image_file("files/Sg.png")
   kanish_face_encoding = face_recognition.face_encodings(kanish_image)[0]
 
-  narmathaa_image = face_recognition.load_image_file("files/narmathaa.jpeg")
+  narmathaa_image = face_recognition.load_image_file("files/Deigo.png")
   narmathaa_face_encoding = face_recognition.face_encodings(narmathaa_image)[0]
 
   # Create arrays of known face encodings and their names
@@ -233,11 +233,11 @@ def face_detection(cv2,imgdata):
     narmathaa_face_encoding
   ]
   known_face_names = [
-    "Barack Obama",
-    "Joe Biden",
+    "Jesus",
+    "Peter",
     "Selva",
-    "Kanish",
-    "Narmathaa"
+    "Sg",
+    "Deigo"
   ]
   # Initialize some variables
   name = ''
@@ -281,12 +281,12 @@ def face_detection(cv2,imgdata):
     # Emotion Detection part of the code***************************************
     # Grab a single frame of video
     # ret, frame = video_capture.read()
-    frame = face_recognition.load_image_file('Images/profile.png')
+    # frame = face_recognition.load_image_file('Images/profile.png')
     # Convert frame to grayscale
-    # img = Image.open(io.BytesIO(imgdata))
-    # opencv_img= cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
-    # gray_frame = cv2.cvtColor(opencv_img, cv2.COLOR_BGR2GRAY)
+    img = Image.open(io.BytesIO(imgdata))
+    frame= cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # Convert grayscale frame to RGB format
     rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
     # Detect faces in the frame
@@ -304,7 +304,7 @@ def face_detection(cv2,imgdata):
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = "Unknown"
+            name = "U"
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
