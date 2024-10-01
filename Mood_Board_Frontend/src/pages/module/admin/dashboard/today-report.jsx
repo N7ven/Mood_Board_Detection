@@ -184,9 +184,11 @@ const TodayReport = ({data}) => {
       <div className={styles.customer_details}>
         <div className={styles.pro_detail}>
           <img src={`data:image/png;base64,${data?.image64}`} alt="profile" className={styles.proimg} />
-          Age:{data?.age} & Gender:{data?.gender}
           <p>
-            Accompained with number of
+            Age:{data?.age} & {data?.gender}
+          </p> 
+          <p>
+            Accompanied with
             <ul className={styles.acc_user}>
               <li>
                 <a className={styles.less}>
