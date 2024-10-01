@@ -431,6 +431,7 @@
             background-color: #FFFFFF;
             flex: 1;
             min-height: 70px;
+            min-width: 115px;
             border-radius: 8px;
             padding: 12px 15px 12px 12px;
             border-left: 6px solid transparent;
@@ -459,7 +460,7 @@
             }
             img{
                 position: absolute;
-                right: 10px;
+                right: 3px;
                 top: 10px;
             }
             &.happy{
