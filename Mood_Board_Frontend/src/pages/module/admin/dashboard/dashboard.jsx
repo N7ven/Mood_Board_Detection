@@ -112,7 +112,8 @@ const Dashboard = () => {
       if(indexId){
       clrInterval()
       }
-      startInterval()
+      // startInterval()
+      fetchUserData()
       }, [selectedReportIndex]);
 
 
