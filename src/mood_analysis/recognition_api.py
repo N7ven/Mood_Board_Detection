@@ -17,6 +17,8 @@ import logging
 import requests 
 import os 
 from PIL import Image
+import socketio
+import socketio.client
 
 # Get the relativ path to this file (we will use it later)
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -76,9 +78,8 @@ def get_insert_data(json_data):
 
                update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
                cursor.execute(update_user_querry)
-
-          
-               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+         
+               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
                cursor.execute(insert_user_querry_trends)
   
             else:
@@ -177,6 +178,8 @@ def post_results(name,age,gender,emotion,encoded_image):
     # * ---------- SEND data to API --------- *
     #print("Status: ", json_to_export)
     get_insert_data(json_to_export)
+    sio.emit('custom-message', str(get_all_socket_entries()))
+
     # r = requests.post(url='http://127.0.0.1:5000/receive_data', json=json_to_export)
     # print("Status: ", r.status_code)
 
@@ -576,7 +579,66 @@ def get_5_last_entries():
     # Return the user's data to the front
     return jsonify(list_response)
 
+def get_all_socket_entries():
+    answer_to_send = []
+    # Check if the user is already in the DB
+    try:
+        # Connect to DB
+        connection = DATABASE_CONNECTION()
+        cursor = connection.cursor()
+        list_cursor = connection.cursor()
 
+        # Query the DB to get all the data of a user:
+        lasts_entries_sql_query = f"SELECT * FROM users"
+        cursor.execute(lasts_entries_sql_query)
+        result = list(cursor.fetchall())
+
+        # Query the DB to get all line chart datas
+        line_sql_query = f"SELECT date,arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date,arrival_time order by date,arrival_time"
+        list_cursor.execute(line_sql_query)
+        list_result = list(list_cursor.fetchall())
+
+        connection.commit()
+
+        # if DB is not empty:
+        if result:
+            #print(result)
+            # print(list_result)
+            
+            # Structure the data and put the dates in string for the front
+            keyss=['name','date',"time",'picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64']
+            for k, v in enumerate(result):
+                answer_to_send_new = {}
+                for ko, vo in enumerate(result[k]):
+                    answer_to_send_new[keyss[ko]] = str(vo)
+                answer_to_send.append(answer_to_send_new) 
+        else:
+            answer_to_send = {'error': 'error detect'}
+
+        # IT"S FOR LINE CHART if DB is not empty:
+        if list_result:
+            # print(result)
+            # Structure the data and put the dates in string for the front
+            # keyss=['emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry']
+            answer_to_chart=[]
+            for k, v in enumerate(list_result):
+                answer_to_chart.append(list_result[k])
+        else:
+            answer_to_chart = {'error': 'error detect'}
+
+        list_response={'answer_to_send':answer_to_send,'answer_to_chart':answer_to_chart}
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("ERROR DB: ", error)
+    finally:
+        # closing database connection:
+        if (connection):
+            cursor.close()
+            list_cursor.close()
+            connection.close()
+
+    # Return the user's data to the front
+    return list_response
 
                                  
 # * -------------------- RUN SERVER -------------------- *
@@ -584,6 +646,20 @@ if __name__ == '__main__':
     # * --- DEBUG MODE: --- *
     # app.run(host='127.0.0.1', port=5000, debug=True)
     #  * --- DOCKER PRODUCTION MODE: --- *
+    sio = socketio.Client()
+    sio.connect('http://20.204.226.52:9002/')
+    # sio.wait()
+    @sio.event
+    def connect():
+        print('connected to server')
+    @sio.event
+    def disconnect():
+        print('disconnected from server')
+    @sio.on('custom-message')
+    def hello(a):
+        print(a)
+    # * --- DEBUG MODE: --- *
     app.run(host='0.0.0.0', port=5000)
+
     # app.run(host='0.0.0.0', port=os.environ['PORT']) -> DOCKER
 
