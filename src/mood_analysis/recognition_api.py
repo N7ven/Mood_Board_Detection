@@ -34,6 +34,12 @@ DATABASE_HOST = '74.225.150.213'
 DATABASE_PORT = '5432'
 DATABASE_NAME = 'face_detect'
 
+# DATABASE_USER = 'postgres'
+# DATABASE_PASSWORD = 'admin'
+# DATABASE_HOST = 'localhost'
+# DATABASE_PORT = '5432'
+# DATABASE_NAME = 'Mood_Board'
+
 def DATABASE_CONNECTION():
     return psycopg2.connect(user=DATABASE_USER,
                               password=DATABASE_PASSWORD,
