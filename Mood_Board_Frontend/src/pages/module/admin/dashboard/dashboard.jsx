@@ -21,6 +21,7 @@ import Purchases from './purchases';
 import History from './history';
 import TodayReport from './today-report';
 import styles from './dashboard.module.scss';
+import { socket } from './socket';
 
 
 const Dashboard = () => {
@@ -34,13 +35,57 @@ const Dashboard = () => {
   const [selectedTodayReport, setSelectedTodayReport] = useState();
   const [selectedReportIndex, setSelectedReportIndex] = useState(0);
   const [indexId, setIndexId] = useState(null);
-    const webcamRef = React.useRef(null);
+  const webcamRef = React.useRef(null);
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+      function onConnect() {
+        console.log('Connected', fooEvents)
+        // sendImage()
+        setIsConnected(true);
+      }
+  
+      function onDisconnect() {
+        setIsConnected(false);
+      }
+  
+      function onFooEvent(value) {
+        console.log('custom-message',JSON.parse(value))
+        setFooEvents(previous => [...previous, value]);
+        const respose = JSON.parse(value)
+       if(response.answer_to_send && response.answer_to_send.length>0) {
+          setTodayReport(response.answer_to_send)
+          console.log("Old",selectedTodayReport)
+          console.log("New",response.answer_to_send[selectedReportIndex])
+          setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
+       }
+       // Chart Data Fetch
+       if(response.answer_to_chart && response.answer_to_chart.length>0) {
+        setTodayReportChart(response.answer_to_chart)
+        }
+  
+      }
+      socket.on("connect_error", (error) => {
+        console.log('error', error)
+      });
+  
+      socket.on('connect', onConnect);
+      socket.on('custom-message', onFooEvent);
+  
+      return () => {
+        socket.off('connect', onConnect);
+        socket.off('foo', onFooEvent);
+      };
+    }, []);
 
     useEffect(() => {
       setInterval(() => {
         let imageSrc = webcamRef.current.getScreenshot();
         imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
         console.log("ImageStr",imageSrc)
+        // fetch('http://127.0.0.1:5000/receive_image', {
         fetch('https://okotech.ai/api/receive_image', {
         method: 'POST',
         body: JSON.stringify({
@@ -87,6 +132,7 @@ const Dashboard = () => {
   };
 
   const fetchUserData = () => {
+  // fetch('hhttp://127.0.0.1:5000/get_users_data')
   fetch('https://okotech.ai/api/get_users_data')
   .then(response => response.json())
   .then(response => {
