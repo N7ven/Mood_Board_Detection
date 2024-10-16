@@ -533,6 +533,7 @@ def get_5_last_entries():
 
         # Query the DB to get all line chart datas
         line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date_time order by date_time"
+ 
         list_cursor.execute(line_sql_query)
         list_result = list(list_cursor.fetchall())
 
@@ -560,10 +561,11 @@ def get_5_last_entries():
             # keyss=['emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry']
             answer_to_chart=[]
             for k, v in enumerate(list_result):
-                answer_to_chart_new = []
+                answer_to_chart_new = {}
                 for ko, vo in enumerate(list_result[k]):
-                    answer_to_chart_new[ko] = str(vo)
+                    answer_to_chart_new[str(ko)] = str(vo)
                 answer_to_chart.append(answer_to_chart_new)
+                # print("answer_to_chart",answer_to_chart)
         else:
             answer_to_chart = {'error': 'error detect'}
 
