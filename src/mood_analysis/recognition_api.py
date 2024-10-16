@@ -17,7 +17,6 @@ import logging
 import requests 
 import os 
 from PIL import Image
-import socketio
 import socketio.client
 
 # Get the relativ path to this file (we will use it later)
@@ -47,8 +46,6 @@ def DATABASE_CONNECTION():
                               port=DATABASE_PORT,
                               database=DATABASE_NAME)
 
-
-
 # * --------------------  ROUTES ------------------- *
 
 # Supporting Methods
@@ -62,30 +59,31 @@ def get_insert_data(json_data):
             cursor = connection.cursor()
 
             # Query to check if the user as been saw by the camera today
+            # f"SELECT * FROM users WHERE current_timestamp = '{json_data['date_time']}' AND name = '{json_data['name']}'"
             user_saw_today_sql_query =\
-                f"SELECT * FROM users WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
+                f"SELECT * FROM users WHERE date_time = '{json_data['date']}' AND name = '{json_data['name']}'"
 
             cursor.execute(user_saw_today_sql_query)
             result = cursor.fetchall()
             connection.commit()
 
             for row in result:
-                print(row[12]+int(json_data['emotion_surprised']))
+                print(row[8]+int(json_data['emotion_surprised']))
 
             # If use is already in the DB for today:
             if result:
                print('user IN')
-               updated_emotion_happy=row[7]+int(json_data['emotion_happy'])
-               updated_emotion_fear=row[8]+int(json_data['emotion_fear'])
-               updated_emotion_sad=row[9]+int(json_data['emotion_sad'])
-               updated_emotion_surprised=row[10]+int(json_data['emotion_surprised'])
-               updated_emotion_neutral=row[11]+int(json_data['emotion_neutral'])
-               updated_emotion_angry=row[12]+int(json_data['emotion_angry'])
+               updated_emotion_happy=row[5]+int(json_data['emotion_happy'])
+               updated_emotion_fear=row[6]+int(json_data['emotion_fear'])
+               updated_emotion_sad=row[7]+int(json_data['emotion_sad'])
+               updated_emotion_surprised=row[8]+int(json_data['emotion_surprised'])
+               updated_emotion_neutral=row[9]+int(json_data['emotion_neutral'])
+               updated_emotion_angry=row[10]+int(json_data['emotion_angry'])
 
-               update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+               update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date_time = '{json_data['date']}'"
                cursor.execute(update_user_querry)
          
-               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp)"
                cursor.execute(insert_user_querry_trends)
   
             else:
@@ -93,10 +91,10 @@ def get_insert_data(json_data):
                 # Save image
                 
                 # Create a new row for the user today:
-                insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_array']}')"
+                insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['picture_array']}')"
                 cursor.execute(insert_user_querry)
 
-                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}',current_timestamp)"
                 cursor.execute(insert_user_querry_trends)
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -177,14 +175,16 @@ def post_results(name,age,gender,emotion,encoded_image):
     json_to_export['emotion_angry'] = emotion5
     json_to_export['emotion_surprised'] = emotion6
     json_to_export['accuracy'] = '50%'
-    json_to_export['hour'] = f'{time.localtime().tm_hour}:{time.localtime().tm_min}:{time.localtime().tm_sec}'
-    json_to_export['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
     json_to_export['picture_array'] = encoded_image
+    json_to_export['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
+
 
     # * ---------- SEND data to API --------- *
     #print("Status: ", json_to_export)
     get_insert_data(json_to_export)
+    # print("data",get_all_socket_entries())
     sio.emit('custom-message', str(get_all_socket_entries()))
+    # print("data",str(get_all_socket_entries()))
 
     # r = requests.post(url='http://127.0.0.1:5000/receive_data', json=json_to_export)
     # print("Status: ", r.status_code)
@@ -286,111 +286,107 @@ def face_detection(cv2,imgdata):
   genderNet=cv2.dnn.readNet(genderModel,genderProto)
 
   while True:
-
-    # Emotion Detection part of the code***************************************
-    # Grab a single frame of video
-    # ret, frame = video_capture.read()
-    # frame = face_recognition.load_image_file('Images/profile.png')
-    # Convert frame to grayscale
-    img = Image.open(io.BytesIO(imgdata))
-    frame= cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # Convert grayscale frame to RGB format
-    rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
-    # Detect faces in the frame
-    faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
-    # Face Detection part of the code ***************************************
-    if process_this_frame:
+        # Emotion Detection part of the code***************************************
+        # Grab a single frame of video
+        # ret, frame = video_capture.read()
+        # frame = face_recognition.load_image_file('Images/profile.png')
+        # Convert frame to grayscale
+        img = Image.open(io.BytesIO(imgdata))
+        frame= cv2.cvtColor(np.array(img), cv2.COLOR_BGR2RGB)
+        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # Convert grayscale frame to RGB format
+        rgb_frame = cv2.cvtColor(gray_frame, cv2.COLOR_GRAY2RGB)
+        # Detect faces in the frame
+        faces = face_cascade.detectMultiScale(gray_frame, scaleFactor=1.1, minNeighbors=5, minSize=(60, 60))
+        # Face Detection part of the code ***************************************
+        if process_this_frame:
         # Resize frame of video to 1/4 size for faster face recognition processing
-        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-        rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
-        # Find all the faces and face encodings in the current frame of video
-        face_locations = face_recognition.face_locations(rgb_small_frame)
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-        face_names = []
-        for face_encoding in face_encodings:
-            # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-            name = "U"
-            face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-            best_match_index = np.argmin(face_distances)
-            if matches[best_match_index]:
-                name = known_face_names[best_match_index]
-            face_names.append(name)
-            print(face_names)
+            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+            rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
+            # Find all the faces and face encodings in the current frame of video
+            face_locations = face_recognition.face_locations(rgb_small_frame)
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+            face_names = []
+            for face_encoding in face_encodings:
+                # See if the face is a match for the known face(s)
+                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+                name = "U"
+                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                best_match_index = np.argmin(face_distances)
+                if matches[best_match_index]:
+                    name = known_face_names[best_match_index]
+                face_names.append(name)
+                print(face_names)
 
-    process_this_frame = not process_this_frame
+            process_this_frame = not process_this_frame
 
- # Emotion Detection part of the code ****************************************
+        # Emotion Detection part of the code ****************************************
         # Display the results
-    for (x, y, w, h) in faces:
-        # Extract the face ROI (Region of Interest)
-        face_roi = rgb_frame[y:y + h, x:x + w]
-        # Perform emotion analysis on the face ROI
-        #result = DeepFace.analyze(face_roi, actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
-        result = DeepFace.analyze(face_roi, actions=["emotion"], enforce_detection=False)
-        # Determine the dominant emotion
-        emotion = result[0]['dominant_emotion']
-        # # Draw rectangle around face and label with predicted emotion
-        #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-        cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
-        #print(result[0]['age']," years old ",result[0]["dominant_race"]," ",result[0]["dominant_emotion"]," ", result[0]["gender"])
-        #print(result)
-        print(emotion)
-    # Face Detection part of the code ****************************************
-    for (top, right, bottom, left), name in zip(face_locations, face_names):
-        # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-        top *= 4
-        right *= 4
-        bottom *= 4
-        left *= 4
-        # Draw a box around the face
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-        # Draw a label with a name below the face
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        print(name)
+        for (x, y, w, h) in faces:
+            # Extract the face ROI (Region of Interest)
+            face_roi = rgb_frame[y:y + h, x:x + w]
+            # Perform emotion analysis on the face ROI
+            #result = DeepFace.analyze(face_roi, actions=['age', 'gender', 'race', 'emotion'], enforce_detection=False)
+            result = DeepFace.analyze(face_roi, actions=["emotion"], enforce_detection=False)
+            # Determine the dominant emotion
+            emotion = result[0]['dominant_emotion']
+            # # Draw rectangle around face and label with predicted emotion
+            #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(frame, emotion, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+            #print(result[0]['age']," years old ",result[0]["dominant_race"]," ",result[0]["dominant_emotion"]," ", result[0]["gender"])
+            #print(result)
+            print(emotion)
 
-    # AgeGender part of the code ****************************************
-    padding=20
-    resultImg,faceBoxes=highlightFace(faceNet,frame)
-    if not faceBoxes:
-        print("No face detected")
+        # Face Detection part of the code ****************************************
+        for (top, right, bottom, left), name in zip(face_locations, face_names):
+            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+            top *= 4
+            right *= 4
+            bottom *= 4
+            left *= 4
+            # Draw a box around the face
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            # Draw a label with a name below the face
+            cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            print(name)
 
-    for faceBox in faceBoxes:
-        face=frame[max(0,faceBox[1]-padding):
-        min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
-        :min(faceBox[2]+padding, frame.shape[1]-1)]
+        # AgeGender part of the code ****************************************
+        padding=20
+        resultImg,faceBoxes=highlightFace(faceNet,frame)
+        if not faceBoxes:
+            print("No face detected")
 
-        blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
-        genderNet.setInput(blob)
-        genderPreds=genderNet.forward()
-        gender=genderList[genderPreds[0].argmax()]
-        print(f'Gender: {gender}')
+        for faceBox in faceBoxes:
+            face=frame[max(0,faceBox[1]-padding):
+            min(faceBox[3]+padding,frame.shape[0]-1),max(0,faceBox[0]-padding)
+            :min(faceBox[2]+padding, frame.shape[1]-1)]
 
-        ageNet.setInput(blob)
-        agePreds=ageNet.forward()
-        age=ageList[agePreds[0].argmax()]
-        print(f'Age: {age[1:-1]} years')
-        cv2.putText(frame, "           "+gender+"-"+age, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-        #cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
-        cv2.imwrite(os.path.join('Images/convert.png'), frame) 
-        with open("Images/convert.png", "rb") as f:
-            encoded_image = base64.b64encode(f.read())
-            base64_string = encoded_image.decode("utf-8")
-            # print(base64_string)
+            blob=cv2.dnn.blobFromImage(face, 1.0, (227,227), MODEL_MEAN_VALUES, swapRB=False)
+            genderNet.setInput(blob)
+            genderPreds=genderNet.forward()
+            gender=genderList[genderPreds[0].argmax()]
+            print(f'Gender: {gender}')
+
+            ageNet.setInput(blob)
+            agePreds=ageNet.forward()
+            age=ageList[agePreds[0].argmax()]
+            print(f'Age: {age[1:-1]} years')
+            cv2.putText(frame, "           "+gender+"-"+age, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+            #cv2.putText(resultImg, f'{gender}, {age}', (faceBox[0], faceBox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2, cv2.LINE_AA)
+            cv2.imwrite(os.path.join('Images/convert.png'), frame) 
+            with open("Images/convert.png", "rb") as f:
+                encoded_image = base64.b64encode(f.read())
+                base64_string = encoded_image.decode("utf-8")
+                # print(base64_string)
         if len(name)>1:   
             post_results(name,age,gender,emotion,base64_string)
 
-    # Display the resulting image
-    # cv2.imshow('Video', frame)
-    # encoded_string = base64.b64encode(face_roi)
-    # print(encoded_string)  
-    # Hit 'q' on the keyboard to quit!
-    break
+
+        break
    
 # Release the capture and close all windows
 #   video_capture.release()
@@ -411,7 +407,7 @@ def get_receive_data():
 
             # Query to check if the user as been saw by the camera today
             user_saw_today_sql_query =\
-                f"SELECT * FROM users WHERE date = '{json_data['date']}' AND name = '{json_data['name']}'"
+                f"SELECT * FROM users WHERE date_time = '{json_data['date_time']}' OR name = '{json_data['name']}'"
 
             cursor.execute(user_saw_today_sql_query)
             result = cursor.fetchall()
@@ -430,24 +426,21 @@ def get_receive_data():
                updated_emotion_neutral=row[11]+int(json_data['emotion_neutral'])
                updated_emotion_angry=row[12]+int(json_data['emotion_angry'])
 
-               update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+               update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date_time = current_timestamp"
                cursor.execute(update_user_querry)
-
-            #    insert_user_querry_trends = f"UPDATE users_trends SET name = '{json_data['name']}',age = '{json_data['age']}',gender = '{json_data['gender']}', emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}',accuracy = '{json_data['accuracy']}',date = '{json_data['date']}',arrival_time = '{json_data['hour']}',image64 = '{json_data['picture_array']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
-            #    cursor.execute(insert_user_querry_trends)
-
-               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+         
+               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp)"
                cursor.execute(insert_user_querry_trends)
-
+  
             else:
                 print("user OUT")
                 # Save image
                 
                 # Create a new row for the user today:
-                insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_array']}')"
+                insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', current_timestamp, '{json_data['picture_array']}')"
                 cursor.execute(insert_user_querry)
 
-                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['hour']}')"
+                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}',current_timestamp)"
                 cursor.execute(insert_user_querry_trends)
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -539,7 +532,7 @@ def get_5_last_entries():
         result = list(cursor.fetchall())
 
         # Query the DB to get all line chart datas
-        line_sql_query = f"SELECT date,arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date,arrival_time order by date,arrival_time"
+        line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date_time order by date_time"
         list_cursor.execute(line_sql_query)
         list_result = list(list_cursor.fetchall())
 
@@ -551,7 +544,7 @@ def get_5_last_entries():
             # print(list_result)
             
             # Structure the data and put the dates in string for the front
-            keyss=['name','date',"time",'picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64']
+            keyss=['name','picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64','date_time']
             for k, v in enumerate(result):
                 answer_to_send_new = {}
                 for ko, vo in enumerate(result[k]):
@@ -567,7 +560,10 @@ def get_5_last_entries():
             # keyss=['emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry']
             answer_to_chart=[]
             for k, v in enumerate(list_result):
-                answer_to_chart.append(list_result[k])
+                answer_to_chart_new = []
+                for ko, vo in enumerate(list_result[k]):
+                    answer_to_chart_new[ko] = str(vo)
+                answer_to_chart.append(answer_to_chart_new)
         else:
             answer_to_chart = {'error': 'error detect'}
 
@@ -600,7 +596,9 @@ def get_all_socket_entries():
         result = list(cursor.fetchall())
 
         # Query the DB to get all line chart datas
-        line_sql_query = f"SELECT date,arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date,arrival_time order by date,arrival_time"
+        # line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date_time order by date_time"
+        line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad, sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends WHERE date_time >= (current_timestamp - (50 ||' seconds')::interval) AND date_time <  current_timestamp group by date_time, arrival_date, arrival_time order by date_time"
+
         list_cursor.execute(line_sql_query)
         list_result = list(list_cursor.fetchall())
 
@@ -612,7 +610,7 @@ def get_all_socket_entries():
             # print(list_result)
             
             # Structure the data and put the dates in string for the front
-            keyss=['name','date',"time",'picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64']
+            keyss=['name','picture','gender','accuracy','age','emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry','image64','date_time']
             for k, v in enumerate(result):
                 answer_to_send_new = {}
                 for ko, vo in enumerate(result[k]):
@@ -628,7 +626,11 @@ def get_all_socket_entries():
             # keyss=['emotion_happy','emotion_fear','emotion_sad','emotion_surprised','emotion_neutral','emotion_angry']
             answer_to_chart=[]
             for k, v in enumerate(list_result):
-                answer_to_chart.append(list_result[k])
+                answer_to_chart_new = {}
+                for ko, vo in enumerate(list_result[k]):
+                    answer_to_chart_new[str(ko)] = str(vo)
+                answer_to_chart.append(answer_to_chart_new)
+                print("answer_to_chart",answer_to_chart)
         else:
             answer_to_chart = {'error': 'error detect'}
 
@@ -661,12 +663,12 @@ if __name__ == '__main__':
     @sio.event
     def disconnect():
         print('disconnected from server')
-    @sio.on('custom-message')
-    def hello(a):
-        print(a)
+    # @sio.on('custom-message')
+    # def hello(a):
+    #     print(a)
     # * --- DEBUG MODE: --- *
     app.run(host='0.0.0.0', port=5000)
     # app.run(host='0.0.0.0', port=os.environ['PORT']) -> DOCKER
-    # Local --> app.run(host='127.0.0.1', port=5000, debug=True)
+    # app.run(host='127.0.0.1', port=5000, debug=True)
 
 
