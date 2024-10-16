@@ -52,9 +52,12 @@ const Dashboard = () => {
       }
   
       function onFooEvent(value) {
-        console.log('custom-message',JSON.parse(value))
+        console.log('custom-message',value)
+        var b = value.replace(/'/g, '"');
+        const d = JSON.parse(b);
+        console.log('custom-message',d)
         setFooEvents(previous => [...previous, value]);
-        const respose = JSON.parse(value)
+      const response = d
        if(response.answer_to_send && response.answer_to_send.length>0) {
           setTodayReport(response.answer_to_send)
           console.log("Old",selectedTodayReport)
@@ -84,9 +87,9 @@ const Dashboard = () => {
       setInterval(() => {
         let imageSrc = webcamRef.current.getScreenshot();
         imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
-        console.log("ImageStr",imageSrc)
-        // fetch('http://127.0.0.1:5000/receive_image', {
-        fetch('https://okotech.ai/api/receive_image', {
+        // console.log("ImageStr",imageSrc)
+        fetch('http://127.0.0.1:5000/receive_image', {
+        // fetch('https://okotech.ai/api/receive_image', {
         method: 'POST',
         body: JSON.stringify({
         // Add parameters here
@@ -100,21 +103,20 @@ const Dashboard = () => {
       .then((data) => {
       console.log(data);
       // Handle Fetch data
-
       })
       .catch((err) => {
       console.log(err.message);
       });
-      }, 5000);
+      }, 2000);
     }, [])
 
     useEffect(() => {
       if(indexId){
       clrInterval()
       }
-      // startInterval()
+      //startInterval()
       fetchUserData()
-      }, [selectedReportIndex]);
+    }, [selectedReportIndex]);
 
 
   const handleChange = (event, newValue) => {
@@ -133,8 +135,8 @@ const Dashboard = () => {
   };
 
   const fetchUserData = () => {
-  // fetch('hhttp://127.0.0.1:5000/get_users_data')
-  fetch('https://okotech.ai/api/get_users_data')
+  fetch('hhttp://127.0.0.1:5000/get_users_data')
+  // fetch('https://okotech.ai/api/get_users_data')
   .then(response => response.json())
   .then(response => {
     console.log("User Response",response)
@@ -176,13 +178,15 @@ const Dashboard = () => {
 //    });
 //  };
   
-  let happy_count=0,surprised_count=0,sad_count=0,angry_count=0,fear_count=0;
+  let happy_count=0,surprised_count=0,sad_count=0,angry_count=0,fear_count=0,neutral_count=0,unhappy_count=0;
   for (let i = 0; i < todayReport.length; i++) {
     happy_count+=parseInt(todayReport[i]?.emotion_happy)
     surprised_count+=parseInt(todayReport[i]?.emotion_surprised)
+    neutral_count+=parseInt(todayReport[i]?.emotion_neutral)
     sad_count+=parseInt(todayReport[i]?.emotion_sad)
     angry_count+=parseInt(todayReport[i]?.emotion_angry)
     fear_count+=parseInt(todayReport[i]?.emotion_fear)
+    unhappy_count=angry_count+fear_count
   } 
 
   return (
@@ -216,6 +220,18 @@ const Dashboard = () => {
                 </h3>
               </div>
             </li>
+            <li className={styles.surprised}>
+              <div className={styles.emoji}>
+                <img src={Images.SURPRISED} alt="surprised" width="24" />
+              </div>
+              <div className={styles.txtCont}>
+                <h6>Neutral</h6>
+                <h3>
+                  {neutral_count}
+                  <span>20%</span>
+                </h3>
+              </div>
+            </li>
             <li className={styles.confused}>
               <div className={styles.emoji}>
                 <img src={Images.CONFUSED} alt="confused" width="24" />
@@ -233,22 +249,10 @@ const Dashboard = () => {
                 <img src={Images.DISGUSTED} alt="disgusted" width="24" />
               </div>
               <div className={styles.txtCont}>
-                <h6>Disgusted</h6>
+                <h6>Unhappy</h6>
                 <h3>
-                {fear_count}
+                {unhappy_count}
                   <span>7%</span>
-                </h3>
-              </div>
-            </li>
-            <li className={styles.contempt}>
-              <div className={styles.emoji}>
-                <img src={Images.CONTEMPT} alt="contempt" width="24" />
-              </div>
-              <div className={styles.txtCont}>
-                <h6>Contempt</h6>
-                <h3>
-                {angry_count}
-                  <span>5%</span>
                 </h3>
               </div>
             </li>
