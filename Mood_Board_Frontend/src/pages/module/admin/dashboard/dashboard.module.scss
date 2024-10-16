@@ -541,13 +541,14 @@
     }
     .chart_label{
         position: absolute;
-        top: -9px;
-        left: 49px;
+        top: 14px;
+        left: 70px;
         right: 56px;
+        z-index: 6;
     }
     & > h3{
         position: absolute;
-        top: 70px;
+        bottom: -14px;
         left: 208px;
         z-index: 3;
         font-size: 18px;

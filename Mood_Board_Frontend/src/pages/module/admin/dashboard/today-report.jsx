@@ -162,9 +162,9 @@ const TodayReport = ({data}) => {
             </linearGradient>
 
           </svg>
-          <svg viewBox="-14 -16 500 400" className={styles.chart_label}>
+          <svg viewBox="-14 -16 530 400" className={styles.chart_label}>
             <path id="curve" fill="transparent" d="M1 239.5C1 239.5 3.00006 13 241.25 0.499985C479.5 13 480 239.5 480 239.5" />
-            <text width="500" fontSize="14px">
+            <text width="500" fontSize="14px" fill="#FFFFFF">
               <textPath xlinkHref="#curve">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 CONTEMPT
