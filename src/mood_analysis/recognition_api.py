@@ -83,7 +83,7 @@ def get_insert_data(json_data):
                update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date_time = '{json_data['date']}'"
                cursor.execute(update_user_querry)
          
-               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp)"
+               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy,arrival_date_time,arrival_date,arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
                cursor.execute(insert_user_querry_trends)
   
             else:
@@ -94,7 +94,7 @@ def get_insert_data(json_data):
                 insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', '{json_data['date']}', '{json_data['picture_array']}')"
                 cursor.execute(insert_user_querry)
 
-                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}',current_timestamp)"
+                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, arrival_date_time, arrival_date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}',current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
                 cursor.execute(insert_user_querry_trends)
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -429,7 +429,7 @@ def get_receive_data():
                update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date_time = current_timestamp"
                cursor.execute(update_user_querry)
          
-               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp)"
+               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, arrival_date_time, arrival_date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
                cursor.execute(insert_user_querry_trends)
   
             else:
@@ -440,7 +440,7 @@ def get_receive_data():
                 insert_user_querry = f"INSERT INTO users (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time, image64) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}', current_timestamp, '{json_data['picture_array']}')"
                 cursor.execute(insert_user_querry)
 
-                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, date_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}',current_timestamp)"
+                insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy, arrival_date_time, arrival_date, arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{json_data['emotion_happy']}','{json_data['emotion_sad']}','{json_data['emotion_fear']}','{json_data['emotion_surprised']}','{json_data['emotion_neutral']}','{json_data['emotion_angry']}','{json_data['accuracy']}',current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
                 cursor.execute(insert_user_querry_trends)
 
         except (Exception, psycopg2.DatabaseError) as error:
@@ -532,7 +532,7 @@ def get_5_last_entries():
         result = list(cursor.fetchall())
 
         # Query the DB to get all line chart datas
-        line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date_time order by date_time"
+        line_sql_query = f"SELECT arrival_date, arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by arrival_date_time order by arrival_date_time"
  
         list_cursor.execute(line_sql_query)
         list_result = list(list_cursor.fetchall())
@@ -599,7 +599,8 @@ def get_all_socket_entries():
 
         # Query the DB to get all line chart datas
         # line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date_time order by date_time"
-        line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad, sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends WHERE date_time >= (current_timestamp - (50 ||' seconds')::interval) AND date_time <  current_timestamp group by date_time, arrival_date, arrival_time order by date_time"
+        # line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad, sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends WHERE date_time >= (current_timestamp - (50 ||' seconds')::interval) AND date_time <  current_timestamp group by date_time, arrival_date, arrival_time order by date_time"
+        line_sql_query = f"SELECT arrival_date, arrival_time, sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad, sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by arrival_date, arrival_time order by arrival_date desc, arrival_time desc limit 50"
 
         list_cursor.execute(line_sql_query)
         list_result = list(list_cursor.fetchall())
