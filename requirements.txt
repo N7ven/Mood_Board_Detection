@@ -12,5 +12,7 @@ requests
 face_recognition
 deepface
 tf-keras
+python-engineio
+python-socketio
 
 
