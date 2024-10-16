@@ -12,7 +12,6 @@ const TodayReport = ({data}) => {
 
   const getbgimage=() => {
     const key=emotionValue[emotionIndex]
-    console.log("KEY",key)
     switch (key) {
       case "HAPPY":
         return Images.HAPPY_BG
@@ -31,7 +30,6 @@ const TodayReport = ({data}) => {
   const getsmileye=(smile) => {
 
     const key=emotionValue[emotionIndex]
-    console.log("KEY",key)
     if(key=="HAPPY" && smile=="hap")
       return styles.animated
     if(key=="SURPRISED" && smile=="sur")
@@ -72,8 +70,6 @@ const TodayReport = ({data}) => {
 
   const findIndexValue = () => {
     const maxIndex=indexOfMax(emotionsArray)
-    console.log(maxIndex)
-    console.log(emotionsArray)
     if(maxIndex==0){setMxIndex(0.9)}
     if(maxIndex==1){setMxIndex(0.7)}
     if(maxIndex==2){setMxIndex(0.5)}
@@ -89,7 +85,6 @@ const TodayReport = ({data}) => {
   useEffect(() => {
     if(emotionsArray.length>0){findIndexValue();}
   }, [emotionsArray]);
-  console.log(mxIndex)
   
   return (
     <div className={styles.today_report}>
