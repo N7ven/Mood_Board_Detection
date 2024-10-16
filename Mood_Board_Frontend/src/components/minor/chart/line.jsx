@@ -1,58 +1,85 @@
-import React from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import styles from './chart.module.scss';
 import DateRangePickerComp from '../react-date-range/react-date-range';
 
-const LineCharts = ({data}) => {
-  console.log("chart_value",data)
-  const series = [{
+const LineCharts = ({ data }) => {
+  const [chartSeries, setChartSeries] = useState([{
     name: 'Happy',
-    data: []
+    data: [],
+    dataIndex: 2
   },
   {
     name: 'Surprised',
-    data: []
+    data: [],
+    dataIndex: 3
   },
   {
     name: 'Confused',
-    data: []
+    data: [],
+    dataIndex: 4
   },
   {
     name: 'Disgusted',
-    data: []
+    data: [],
+    dataIndex: 5
   },
   {
     name: 'Contempt',
-    data: []
-  }];
+    data: [],
+    dataIndex: 6
+  }]);
+  const [categories, setCategories] = useState([]);
 
 
-  const xaxis_time=[]
-
-  for (let i = 1; i < data.length; i++) { 
-    xaxis_time.push(data[i][1])
-    series[0].data.push(data[i][2])
-    series[1].data.push(data[i][3])
-    series[2].data.push(data[i][4])
-    series[3].data.push(data[i][5])
-    series[4].data.push(data[i][6])
-  } 
+  useEffect(() => {
+    if (data?.length > 0) {
+      const cat = data?.map((x) => x[1])
+      setCategories(cat);
+      const temp = chartSeries?.map((cat) => {
+        const resData = data.map(item => item[cat.dataIndex]);
+        return ({
+        ...cat,
+        data: [...resData]
+      })})
+      setChartSeries(temp);
+    }
+  }, [data])
 
   const options = {
     chart: {
+      id: 'realtime',
       height: 350,
       type: 'line',
       zoom: {
         enabled: false
       }
     },
+    animations: {
+      enabled: true,
+      easing: 'linear',
+      dynamicAnimation: {
+        speed: 1000
+      }
+    },
     dataLabels: {
-      enabled: false
+      style: {
+        fontSize: '12px',
+        fontWeight: 'bold',
+      },
+      background: {
+        enabled: true,
+        foreColor: '#fff',
+        borderRadius: 2,
+        padding: 4,
+        opacity: 0.9,
+        borderWidth: 1,
+        borderColor: '#fff'
+      },
     },
     stroke: {
-      curve: 'straight',
-      width: [ 2, 2, 2, 2, 2 ]
+      curve: 'smooth',
+      width: 2,
     },
     title: {
       text: 'Emot Trend',
@@ -60,13 +87,16 @@ const LineCharts = ({data}) => {
     },
     grid: {
       row: {
-        colors: [ '#f3f3f3', 'transparent' ], // takes an array which will be repeated on columns
+        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
         opacity: 0
       }
     },
     xaxis: {
-      categories:xaxis_time
-    }
+      categories,
+    },
+    legend: {
+      show: false
+    },
   };
 
   return (
@@ -76,7 +106,7 @@ const LineCharts = ({data}) => {
       </div>
       <div className={styles.chartwrapper}>
       <div id="chart" className={styles.chart}>
-        <ReactApexChart options={options} series={series} type="line" height={350} />
+        <ReactApexChart options={options} series={chartSeries} type="line" height={350} />
       </div>
       </div>
     </div>

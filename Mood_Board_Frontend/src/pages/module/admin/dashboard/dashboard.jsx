@@ -53,22 +53,23 @@ const Dashboard = () => {
   
       function onFooEvent(value) {
         console.log('custom-message',value)
-        var b = value.replace(/'/g, '"');
-        const d = JSON.parse(b);
-        console.log('custom-message',d)
-        setFooEvents(previous => [...previous, value]);
-      const response = d
-       if(response.answer_to_send && response.answer_to_send.length>0) {
-          setTodayReport(response.answer_to_send)
-          console.log("Old",selectedTodayReport)
-          console.log("New",response.answer_to_send[selectedReportIndex])
-          setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
-       }
-       // Chart Data Fetch
-       if(response.answer_to_chart && response.answer_to_chart.length>0) {
-        setTodayReportChart(response.answer_to_chart)
+        if(value) {
+          var b = value.replace(/'/g, '"');
+          const d = JSON.parse(b);
+          console.log('custom-message',d)
+          setFooEvents(previous => [...previous, value]);
+          const response = d
+          if(response.answer_to_send && response.answer_to_send.length>0) {
+              setTodayReport(response.answer_to_send)
+              console.log("Old",selectedTodayReport)
+              console.log("New",response.answer_to_send[selectedReportIndex])
+              setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
+          }
+          // Chart Data Fetch
+          if(response.answer_to_chart && response.answer_to_chart.length>0) {
+            setTodayReportChart(response.answer_to_chart)
+            }
         }
-  
       }
       socket.on("connect_error", (error) => {
         console.log('error', error)
@@ -86,27 +87,30 @@ const Dashboard = () => {
     useEffect(() => {
       setInterval(() => {
         let imageSrc = webcamRef.current.getScreenshot();
-        imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
-        // console.log("ImageStr",imageSrc)
-        // fetch('http://127.0.0.1:5000/receive_image', {
-        fetch('https://okotech.ai/api/receive_image', {
-        method: 'POST',
-        body: JSON.stringify({
-        // Add parameters here
-        image64: imageSrc
-        }),
-        headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-       }
-      })
-      .then((response) => response.json())
-      .then((data) => {
-      console.log(data);
-      // Handle Fetch data
-      })
-      .catch((err) => {
-      console.log(err.message);
-      });
+        if(imageSrc) {
+          imageSrc = imageSrc?.replace(/^data:image\/[a-z]+;base64,/, "");
+          // console.log("ImageStr",imageSrc)
+          // fetch('http://127.0.0.1:5000/receive_image', {
+          fetch('https://okotech.ai/api/receive_image', {
+          method: 'POST',
+          body: JSON.stringify({
+          // Add parameters here
+          image64: imageSrc
+          }),
+          headers: {
+          'Content-type': 'application/json; charset=UTF-8',
+         }
+        })
+        .then((response) => response.json())
+        .then((data) => {
+        console.log(data);
+        // Handle Fetch data
+        })
+        .catch((err) => {
+        console.log(err.message);
+        });
+        }
+        
       }, 2000);
     }, [])
 
