@@ -548,15 +548,16 @@
     }
     & > h3{
         position: absolute;
-        bottom: -14px;
-        left: 208px;
+        bottom: -20px;
+        left: 175px;
         z-index: 3;
-        font-size: 18px;
+        font-size: 15px;
+        max-width: 250;
         font-weight: 500;
-        background-color: #058C1A;
+        background-color: #0b05a3;
         color: #FFFFFF;
         padding: 3px 10px;
-        border-radius: 5px;
+        border-radius: 10px;
         border: 2px solid rgba(#FFFFFF, 0.7);
     }
 }

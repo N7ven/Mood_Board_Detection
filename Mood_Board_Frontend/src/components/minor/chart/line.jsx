@@ -79,7 +79,7 @@ const LineCharts = ({ data }) => {
     },
     stroke: {
       curve: 'smooth',
-      width: 2,
+      width: 3,
     },
     title: {
       text: 'Emot Trend',

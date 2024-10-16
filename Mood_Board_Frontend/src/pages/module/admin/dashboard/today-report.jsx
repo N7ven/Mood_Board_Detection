@@ -18,9 +18,9 @@ const TodayReport = ({data}) => {
       case "SURPRISED":
         return Images.SURPRISED_BG
       case "NEUTRAL":
-        return Images.SURPRISED_BG
+        return Images.NEUTRAL_BG
       case "CONFUSED":
-        return Images.DISGUSTED_BG
+        return Images.CONFUSED_BG
       case "UNHAPPY":
         return Images.CONTEMPT_BG          
       default :
@@ -34,7 +34,7 @@ const TodayReport = ({data}) => {
       return styles.animated
     if(key=="SURPRISED" && smile=="sur")
       return styles.animated
-    if(key=="NEUTRAL" && smile=="sur")
+    if(key=="NEUTRAL" && smile=="nue")
       return styles.animated
     if(key=="CONFUSED" && smile=="con")
       return styles.animated
@@ -77,9 +77,11 @@ const TodayReport = ({data}) => {
     if(maxIndex==4){setMxIndex(0.0)}
     setEmotionIndex(maxIndex)
   }    
+  let emotion_unhappy=parseInt(data?.emotion_angry)+parseInt(data?.emotion_fear)
+  let emotion_total=parseInt(data?.emotion_happy)+parseInt(data?.emotion_surprised)+parseInt(data?.emotion_neutral)+parseInt(data?.emotion_sad)+emotion_unhappy
 
    useEffect(() => {
-    if(data){setEmotionsArray([data?.emotion_happy,data?.emotion_surprised,data?.emotion_neutral,data?.emotion_sad,data?.emotion_fear,data?.emotion_angry]);}
+    if(data){setEmotionsArray([data?.emotion_happy,data?.emotion_surprised,data?.emotion_neutral,data?.emotion_sad,emotion_unhappy]);}
   }, [data]);
 
   useEffect(() => {
@@ -113,7 +115,7 @@ const TodayReport = ({data}) => {
             {data?.emotion_neutral}
               <span>22 %</span>
             </h3>
-            <img className={getsmileye("sur")} src={Images.SURPRISED_ACTIVE} alt="Surprised" width="30" />
+            <img className={getsmileye("nue")} src={Images.NEUTRAL_ACTIVE} alt="Neutral" width="30" />
           </li>
           <li className={styles.confused}>
             <p>Confused</p>
@@ -126,19 +128,19 @@ const TodayReport = ({data}) => {
           <li className={styles.disgusted}>
             <p>Unhappy</p>
             <h3>
-            {data?.emotion_fear}
+            {emotion_unhappy}
               <span>7 %</span>
             </h3>
             <img className={getsmileye("dis")} src={Images.DISGUSTED_ACTIVE} alt="Disgusted" width="30" />
           </li>
         </ul>
         <section className={styles.chart_container}>
-          <h3 className={styles.mood}>{emotionValue[emotionIndex]}</h3>
+          <h3 className={styles.mood}>Total Emotion : {emotion_total}</h3>
           <GaugeChart
             id="gauge-chart2"
             className={styles.chart}
             nrOfLevels={5}
-            colors={[ '#FF5656', '#FF8888', '#F1D614', '#84BD32', '#058C1A' ]}
+            colors={[ '#FF5656', '#F1D614', '#84BD32', '#84BD32', '#058C1A' ]}
             arcWidth={0.1}
             percent={mxIndex}
             cornerRadius={3}
@@ -161,11 +163,11 @@ const TodayReport = ({data}) => {
             <text width="500" fontSize="14px" fill="#FFFFFF">
               <textPath xlinkHref="#curve">
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                CONTEMPT
+                UNHAPPY
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                DISGUEST
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 CONFUSED
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                NEUTRAL
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 SURPRISED
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
