@@ -5,7 +5,7 @@ import GaugeChart from 'react-gauge-chart';
 import styles from './dashboard.module.scss';
 
 const TodayReport = ({data}) => {
-  const emotionValue = ["HAPPY","SURPRISED","CONFUSED","DISGUSTED","CONTEMPT"]
+  const emotionValue = ["HAPPY","SURPRISED","NEUTRAL","CONFUSED","UNHAPPY"]
   const [emotionsArray, setEmotionsArray] = useState([]);
   const [mxIndex, setMxIndex] = useState(0);
   const [emotionIndex, setEmotionIndex] = useState(0);
@@ -18,11 +18,11 @@ const TodayReport = ({data}) => {
         return Images.HAPPY_BG
       case "SURPRISED":
         return Images.SURPRISED_BG
+      case "NEUTRAL":
+        return Images.SURPRISED_BG
       case "CONFUSED":
-        return Images.CONFUSED_BG
-      case "DISGUSTED":
         return Images.DISGUSTED_BG
-      case "CONTEMPT":
+      case "UNHAPPY":
         return Images.CONTEMPT_BG          
       default :
       return Images.HAPPY_BG
@@ -36,11 +36,11 @@ const TodayReport = ({data}) => {
       return styles.animated
     if(key=="SURPRISED" && smile=="sur")
       return styles.animated
+    if(key=="NEUTRAL" && smile=="sur")
+      return styles.animated
     if(key=="CONFUSED" && smile=="con")
       return styles.animated
-    if(key=="DISGUSTED" && smile=="cont")
-      return styles.animated
-    if(key=="CONTEMPT" && smile=="cont")
+    if(key=="UNHAPPY" && smile=="cont")
       return styles.animated
     else
       return null       
@@ -83,15 +83,14 @@ const TodayReport = ({data}) => {
   }    
 
    useEffect(() => {
-    if(data){setEmotionsArray([data?.emotion_happy,data?.emotion_surprised,data?.emotion_sad,data?.emotion_fear,data?.emotion_angry]);}
+    if(data){setEmotionsArray([data?.emotion_happy,data?.emotion_surprised,data?.emotion_neutral,data?.emotion_sad,data?.emotion_fear,data?.emotion_angry]);}
   }, [data]);
 
   useEffect(() => {
     if(emotionsArray.length>0){findIndexValue();}
   }, [emotionsArray]);
   console.log(mxIndex)
-
- 
+  
   return (
     <div className={styles.today_report}>
       <img className={styles.BG_IMAGE} src={getbgimage()}/>
@@ -113,6 +112,14 @@ const TodayReport = ({data}) => {
             </h3>
             <img className={getsmileye("sur")} src={Images.SURPRISED_ACTIVE} alt="Surprised" width="30" />
           </li>
+          <li className={styles.surprised}>
+            <p>Neutral</p>
+            <h3>
+            {data?.emotion_neutral}
+              <span>22 %</span>
+            </h3>
+            <img className={getsmileye("sur")} src={Images.SURPRISED_ACTIVE} alt="Surprised" width="30" />
+          </li>
           <li className={styles.confused}>
             <p>Confused</p>
             <h3>
@@ -122,20 +129,12 @@ const TodayReport = ({data}) => {
             <img className={getsmileye("con")} src={Images.CONFUSED_ACTIVE} alt="Confused" width="30" />
           </li>
           <li className={styles.disgusted}>
-            <p>Disgusted</p>
+            <p>Unhappy</p>
             <h3>
             {data?.emotion_fear}
               <span>7 %</span>
             </h3>
             <img className={getsmileye("dis")} src={Images.DISGUSTED_ACTIVE} alt="Disgusted" width="30" />
-          </li>
-          <li className={styles.contempt}>  
-            <p>Contempt</p>
-            <h3>
-            {data?.emotion_angry}
-              <span>10 %</span>
-            </h3>
-            <img className={getsmileye("cont")} src={Images.CONTEMPT_ACTIVE} alt="Contempt" width="30" />
           </li>
         </ul>
         <section className={styles.chart_container}>
