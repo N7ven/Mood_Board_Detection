@@ -85,20 +85,20 @@ def get_insert_data(json_data):
                update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date_time = '{json_data['date']}'"
                cursor.execute(update_user_querry)
             
-            # User Trends update check 
+               # User Trends update check 
 
-            usertrends_saw_today_sql_query =\
-            f"SELECT * FROM users_trends WHERE arrival_date = '{json_data['date']}' AND arrival_time = '{json_data['time']}' AND name = '{json_data['name']}'"
-            cursor.execute(usertrends_saw_today_sql_query)
-            result_trends = cursor.fetchall()
-            connection.commit()
-            for row_treds in result_trends:
-                print(row_treds[8]+int(json_data['emotion_surprised']))
-            # If use is already in the DB for today:
-                if result_trends:
+               usertrends_saw_today_sql_query =\
+               f"SELECT * FROM users_trends WHERE arrival_date = '{json_data['date']}' AND arrival_time = '{json_data['time']}' AND name = '{json_data['name']}'"
+               cursor.execute(usertrends_saw_today_sql_query)
+               result_trends = cursor.fetchall()
+               connection.commit()
+               for row_treds in result_trends:
+                 print(row_treds[8]+int(json_data['emotion_surprised']))
+                 # If use is already in the DB for today:
+               if result_trends:
                     insert_user_querry_trends = f"UPDATE users_trends SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE arrival_date = '{json_data['date']}' AND arrival_time = '{json_data['time']}' AND name = '{json_data['name']}'"
                     cursor.execute(insert_user_querry_trends)
-                else:
+               else:
                     insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy,arrival_date_time,arrival_date,arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
                     cursor.execute(insert_user_querry_trends)
   
