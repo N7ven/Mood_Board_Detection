@@ -44,7 +44,7 @@ const Dashboard = () => {
   const [todayReport, setTodayReport] = useState([]);
   const [todayReportChart, setTodayReportChart] = useState([]);
   const [overAllReport, setOverAllReport] = useState(reportConst)
-  const [selectedTodayReport, setSelectedTodayReport] = useState();
+  const [selectedTodayReport, setSelectedTodayReport] = useState(reportConst);
   const [indexId, setIndexId] = useState(null);
 
   useEffect(() => {
@@ -56,18 +56,29 @@ const Dashboard = () => {
       onsole.log('Socket Disconnected!')
     }
 
+    const setStateValues = (response) => {
+      if (response.answer_to_send && response.answer_to_send.length > 0) {
+        setTodayReport(response.answer_to_send)
+        // const userData = response.answer_to_send;
+        // if (userData?.length && selectedTodayReport?.name !== 'All') {
+        //   console.log('selectedTodayReport', selectedTodayReport)
+        //   const currentUser = userData?.find(u => u.name === selectedTodayReport?.name);
+        //   console.log('currentUser', currentUser)
+        //   setSelectedTodayReport(currentUser)
+        // }
+      }
+      // Chart Data Fetch
+      if (response.answer_to_chart && response.answer_to_chart.length > 0) {
+        setTodayReportChart(response.answer_to_chart)
+      }
+    }
+
     function onFooEvent(value) {
       if (value) {
         var b = value.replace(/'/g, '"');
         const d = JSON.parse(b);
         const response = d
-        if (response.answer_to_send && response.answer_to_send.length > 0) {
-          setTodayReport(response.answer_to_send)
-        }
-        // Chart Data Fetch
-        if (response.answer_to_chart && response.answer_to_chart.length > 0) {
-          setTodayReportChart(response.answer_to_chart)
-        }
+        setStateValues(response);
       }
     }
 
@@ -138,18 +149,14 @@ const Dashboard = () => {
     clearInterval(indexId)
   };
 
+
+
   const fetchUserData = () => {
     // fetch('hhttp://127.0.0.1:5000/get_users_data')
     fetch('https://okotech.ai/api/get_users_data')
       .then(response => response.json())
       .then(response => {
-        if (response.answer_to_send && response.answer_to_send.length > 0) {
-          setTodayReport(response.answer_to_send)
-        }
-        // Chart Data Fetch
-        if (response.answer_to_chart && response.answer_to_chart.length > 0) {
-          setTodayReportChart(response.answer_to_chart)
-        }
+        setStateValues(response);
       })
   };
 
@@ -179,29 +186,35 @@ const Dashboard = () => {
   //  };
 
   useEffect(() => {
-    let happy_count = 0, surprised_count = 0, sad_count = 0, angry_count = 0, fear_count = 0, neutral_count = 0, unhappy_count = 0;
-    for (let i = 0; i < todayReport.length; i++) {
-      happy_count += parseInt(todayReport[i]?.emotion_happy)
-      surprised_count += parseInt(todayReport[i]?.emotion_surprised)
-      neutral_count += parseInt(todayReport[i]?.emotion_neutral)
-      sad_count += parseInt(todayReport[i]?.emotion_sad)
-      angry_count += parseInt(todayReport[i]?.emotion_angry)
-      fear_count += parseInt(todayReport[i]?.emotion_fear)
-      unhappy_count = angry_count + fear_count
-    }
-    const temp = {
+    if (todayReport?.length) {
+      let emotion_happy = 0, emotion_surprised = 0, emotion_sad = 0, emotion_angry = 0, emotion_fear = 0, emotion_neutral = 0, emotion_unhappy = 0;
+      for (let i = 0; i < todayReport.length; i++) {
+        emotion_happy += parseInt(todayReport[i]?.emotion_happy)
+        emotion_surprised += parseInt(todayReport[i]?.emotion_surprised)
+        emotion_neutral += parseInt(todayReport[i]?.emotion_neutral)
+        emotion_sad += parseInt(todayReport[i]?.emotion_sad)
+        emotion_angry += parseInt(todayReport[i]?.emotion_angry)
+        emotion_fear += parseInt(todayReport[i]?.emotion_fear)
+        emotion_unhappy = emotion_angry + emotion_fear
+      }
+      const temp = {
         ...reportConst,
-        "emotion_happy": happy_count,
-        "emotion_fear": fear_count,
-        "emotion_sad": sad_count,
-        "emotion_surprised": surprised_count,
-        "emotion_neutral": neutral_count,
-        "emotion_angry": angry_count,
-        "emotion_unhappy": unhappy_count
-    }
-    setOverAllReport(temp)
-    if(!selectedTodayReport?.name && todayReport?.length) {
-      setSelectedTodayReport(temp)
+        emotion_happy,
+        emotion_fear,
+        emotion_sad,
+        emotion_surprised,
+        emotion_neutral,
+        emotion_angry,
+        emotion_unhappy
+      }
+      setOverAllReport(temp)
+      const userData = todayReport;
+      if (selectedTodayReport?.name !== 'All') {
+        const currentUser = userData?.find(u => u.name === selectedTodayReport?.name);
+        setSelectedTodayReport(currentUser)
+      } else {
+        setSelectedTodayReport(temp);
+      }
     }
   }, [todayReport])
 
@@ -276,14 +289,17 @@ const Dashboard = () => {
           </ul>
           <div className={styles.emotTrend}>
             <LineCharts data={todayReportChart} />
+            {
+              console.log('sele', selectedTodayReport)
+            }
           </div>
         </div>
         <div className={styles.customer_data}>
           <div className={styles.customer_list}>
             <ul>
               {/* Bala code */}
-              <li className={`${selectedTodayReport?.name === "All" && styles.active} ${styles.happy}`} 
-              onClick={() => setSelectedTodayReport(overAllReport)}>
+              <li className={`${selectedTodayReport?.name === "All" && styles.active} ${styles.happy}`}
+                onClick={() => setSelectedTodayReport(overAllReport)}>
                 <a>
                   <span className={styles.segments}>
                     <img src={Images.SEGMENT01} alt="Segments" width="16" />
