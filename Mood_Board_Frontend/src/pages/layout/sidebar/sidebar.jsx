@@ -35,12 +35,12 @@ function SideNavbar() {
               <p>PLAYBACK</p>
             </NavLink>
           </li>
-          {/* <li>
+          <li>
             <NavLink to="/settings">
               <img src={Images.SETTINGS} alt="Settings" width="24" />
               <p>SETTINGS</p>
             </NavLink>
-          </li> */}
+          </li>
         </ul>
       </nav>
     </div>
