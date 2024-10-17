@@ -3,19 +3,14 @@ import Images from 'assets/Images';
 import LineCharts from 'components/minor/chart/line';
 import DateRangePickerComp from 'components/minor/react-date-range/react-date-range';
 import Webcam from "react-webcam";
-import ReactDOM from 'react-dom';
 import { Buffer } from 'buffer';
-
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-
 import GIF001 from 'assets/images/gif/gif001.gif';
 import GIF002 from 'assets/images/gif/gif002.gif';
-import GIF003 from 'assets/images/gif/gif003.gif';
-import GIF004 from 'assets/images/gif/gif004.gif';
 import GIF005 from 'assets/images/gif/gif005.gif';
 import Purchases from './purchases';
 import History from './history';
@@ -44,35 +39,27 @@ const Dashboard = () => {
   // @ts-ignore
   window.Buffer = Buffer;
   // Bala Code
+  const webcamRef = React.useRef(null);
   const [value, setValue] = React.useState('1');
   const [todayReport, setTodayReport] = useState([]);
   const [todayReportChart, setTodayReportChart] = useState([]);
   const [overAllReport, setOverAllReport] = useState(reportConst)
-
   const [selectedTodayReport, setSelectedTodayReport] = useState();
-  const [selectedReportIndex, setSelectedReportIndex] = useState(0);
   const [indexId, setIndexId] = useState(null);
-  const webcamRef = React.useRef(null);
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     function onConnect() {
-      setIsConnected(true);
+      console.log('Socket connected!')
     }
 
     function onDisconnect() {
-      setIsConnected(false);
+      onsole.log('Socket Disconnected!')
     }
 
     function onFooEvent(value) {
-      console.log('custom-message', value)
       if (value) {
         var b = value.replace(/'/g, '"');
         const d = JSON.parse(b);
-        console.log('custom-message', d)
-        setFooEvents(previous => [...previous, value]);
         const response = d
         if (response.answer_to_send && response.answer_to_send.length > 0) {
           setTodayReport(response.answer_to_send)
@@ -83,6 +70,7 @@ const Dashboard = () => {
         }
       }
     }
+
     socket.on("connect_error", (error) => {
       console.log('error', error)
     });
@@ -98,7 +86,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     setInterval(() => {
-      let imageSrc = webcamRef.current.getScreenshot();
+      let imageSrc = webcamRef.current?.getScreenshot();
       if (imageSrc) {
         imageSrc = imageSrc?.replace(/^data:image\/[a-z]+;base64,/, "");
         // console.log("ImageStr",imageSrc)
@@ -132,7 +120,7 @@ const Dashboard = () => {
     }
     //startInterval()
     fetchUserData()
-  }, [selectedReportIndex]);
+  }, []);
 
 
   const handleChange = (event, newValue) => {
@@ -157,7 +145,6 @@ const Dashboard = () => {
       .then(response => {
         if (response.answer_to_send && response.answer_to_send.length > 0) {
           setTodayReport(response.answer_to_send)
-          setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
         }
         // Chart Data Fetch
         if (response.answer_to_chart && response.answer_to_chart.length > 0) {
@@ -202,16 +189,20 @@ const Dashboard = () => {
       fear_count += parseInt(todayReport[i]?.emotion_fear)
       unhappy_count = angry_count + fear_count
     }
-    setOverAllReport((prev) => ({
-      ...prev,
-      "emotion_happy": happy_count,
-      "emotion_fear": fear_count,
-      "emotion_sad": sad_count,
-      "emotion_surprised": surprised_count,
-      "emotion_neutral": neutral_count,
-      "emotion_angry": angry_count,
-      "emotion_unhappy": unhappy_count
-    }))
+    const temp = {
+        ...reportConst,
+        "emotion_happy": happy_count,
+        "emotion_fear": fear_count,
+        "emotion_sad": sad_count,
+        "emotion_surprised": surprised_count,
+        "emotion_neutral": neutral_count,
+        "emotion_angry": angry_count,
+        "emotion_unhappy": unhappy_count
+    }
+    setOverAllReport(temp)
+    if(!selectedTodayReport?.name && todayReport?.length) {
+      setSelectedTodayReport(temp)
+    }
   }, [todayReport])
 
 
