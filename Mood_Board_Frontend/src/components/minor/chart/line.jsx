@@ -34,10 +34,11 @@ const LineCharts = ({ data }) => {
 
   useEffect(() => {
     if (data?.length > 0) {
-      const cat = data?.map((x) => x[1])
+      const reverseData = data?.reverse();
+      const cat = reverseData?.map((x) => x[1])
       setCategories(cat);
       const temp = chartSeries?.map((cat) => {
-        const resData = data.map(item => item[cat.dataIndex]);
+        const resData = reverseData.map(item => item[cat.dataIndex]);
         return ({
         ...cat,
         data: [...resData]
@@ -59,12 +60,17 @@ const LineCharts = ({ data }) => {
       enabled: true,
       easing: 'linear',
       dynamicAnimation: {
-        speed: 1000
-      }
+        enabled: true,
+        speed: 500
+      },
+      animateGradually: {
+        enabled: true,
+        delay: 150
+    },
     },
     dataLabels: {
       style: {
-        fontSize: '12px',
+        fontSize: '8px',
         fontWeight: 'bold',
       },
       background: {
@@ -78,11 +84,12 @@ const LineCharts = ({ data }) => {
       },
     },
     stroke: {
+      show: true,
       curve: 'smooth',
-      width: 3,
+      width: 2,
     },
     title: {
-      text: 'Emot Trend',
+      text: 'Mood Board',
       align: 'left'
     },
     grid: {
