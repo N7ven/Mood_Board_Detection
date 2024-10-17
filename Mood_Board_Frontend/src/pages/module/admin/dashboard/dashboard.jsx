@@ -35,6 +35,10 @@ const reportConst = {
   "date_time": "None"
 }
 
+const calcPercentage = (x, y) => {
+  return parseFloat((x / y) * 100).toFixed(2);
+}
+
 const Dashboard = () => {
   // @ts-ignore
   window.Buffer = Buffer;
@@ -59,13 +63,6 @@ const Dashboard = () => {
     const setStateValues = (response) => {
       if (response.answer_to_send && response.answer_to_send.length > 0) {
         setTodayReport(response.answer_to_send)
-        // const userData = response.answer_to_send;
-        // if (userData?.length && selectedTodayReport?.name !== 'All') {
-        //   console.log('selectedTodayReport', selectedTodayReport)
-        //   const currentUser = userData?.find(u => u.name === selectedTodayReport?.name);
-        //   console.log('currentUser', currentUser)
-        //   setSelectedTodayReport(currentUser)
-        // }
       }
       // Chart Data Fetch
       if (response.answer_to_chart && response.answer_to_chart.length > 0) {
@@ -121,7 +118,6 @@ const Dashboard = () => {
             console.log(err.message);
           });
       }
-
     }, 2000);
   }, [])
 
@@ -185,7 +181,43 @@ const Dashboard = () => {
   //    });
   //  };
 
-  useEffect(() => {
+  const calPercentageForSelectedUser = (currentUser) => {
+    if (currentUser?.name) {
+      const emotion_happy = parseInt(currentUser.emotion_happy)
+      const emotion_surprised = parseInt(currentUser?.emotion_surprised)
+      const emotion_neutral = parseInt(currentUser?.emotion_neutral)
+      const emotion_sad = parseInt(currentUser?.emotion_sad)
+      const emotion_angry = parseInt(currentUser?.emotion_angry)
+      const emotion_fear = parseInt(currentUser?.emotion_fear)
+      const emotion_unhappy = emotion_angry + emotion_fear
+      const totalEmotion = (emotion_happy +
+        emotion_fear +
+        emotion_sad +
+        emotion_surprised +
+        emotion_neutral +
+        emotion_angry);
+      const percentage_happy = calcPercentage(emotion_happy, totalEmotion);
+      const percentage_fear = calcPercentage(emotion_fear, totalEmotion);
+      const percentage_sad = calcPercentage(emotion_sad, totalEmotion);
+      const percentage_surprised = calcPercentage(emotion_surprised, totalEmotion);
+      const percentage_neutral = calcPercentage(emotion_neutral, totalEmotion);
+      const percentage_angry = calcPercentage(emotion_angry, totalEmotion);
+      const percentage_unhappy = calcPercentage(emotion_unhappy, totalEmotion);
+
+      setSelectedTodayReport({
+        ...currentUser,
+        percentage_happy,
+        percentage_fear,
+        percentage_sad,
+        percentage_surprised,
+        percentage_neutral,
+        percentage_angry,
+        percentage_unhappy
+      })
+    }
+  }
+
+  const calOverallTotalAndPercentage = () => {
     if (todayReport?.length) {
       let emotion_happy = 0, emotion_surprised = 0, emotion_sad = 0, emotion_angry = 0, emotion_fear = 0, emotion_neutral = 0, emotion_unhappy = 0;
       for (let i = 0; i < todayReport.length; i++) {
@@ -197,6 +229,21 @@ const Dashboard = () => {
         emotion_fear += parseInt(todayReport[i]?.emotion_fear)
         emotion_unhappy = emotion_angry + emotion_fear
       }
+      const totalEmotion = (emotion_happy +
+        emotion_fear +
+        emotion_sad +
+        emotion_surprised +
+        emotion_neutral +
+        emotion_angry);
+
+      const percentage_happy = calcPercentage(emotion_happy, totalEmotion);
+      const percentage_fear = calcPercentage(emotion_fear, totalEmotion);
+      const percentage_sad = calcPercentage(emotion_sad, totalEmotion);
+      const percentage_surprised = calcPercentage(emotion_surprised, totalEmotion);
+      const percentage_neutral = calcPercentage(emotion_neutral, totalEmotion);
+      const percentage_angry = calcPercentage(emotion_angry, totalEmotion);
+      const percentage_unhappy = calcPercentage(emotion_unhappy, totalEmotion);
+
       const temp = {
         ...reportConst,
         emotion_happy,
@@ -205,15 +252,29 @@ const Dashboard = () => {
         emotion_surprised,
         emotion_neutral,
         emotion_angry,
-        emotion_unhappy
+        emotion_unhappy,
+        percentage_happy,
+        percentage_fear,
+        percentage_sad,
+        percentage_surprised,
+        percentage_neutral,
+        percentage_angry,
+        percentage_unhappy
       }
-      setOverAllReport(temp)
+      setOverAllReport(temp);
+      return temp;
+    }
+  }
+
+  useEffect(() => {
+    if (todayReport?.length) {
+      const overallTotal = calOverallTotalAndPercentage();
       const userData = todayReport;
       if (selectedTodayReport?.name !== 'All') {
         const currentUser = userData?.find(u => u.name === selectedTodayReport?.name);
-        setSelectedTodayReport(currentUser)
+        calPercentageForSelectedUser(currentUser);
       } else {
-        setSelectedTodayReport(temp);
+        setSelectedTodayReport(overallTotal);
       }
     }
   }, [todayReport])
@@ -234,7 +295,7 @@ const Dashboard = () => {
                 <h3>
                   {/* {todayReport[2]?.emotion_happy} */}
                   {overAllReport?.emotion_happy}
-                  <span>60%</span>
+                  <span>{overAllReport?.percentage_happy}%</span>
                 </h3>
               </div>
             </li>
@@ -246,7 +307,7 @@ const Dashboard = () => {
                 <h6>Surprised</h6>
                 <h3>
                   {overAllReport?.emotion_surprised}
-                  <span>20%</span>
+                  <span>{overAllReport?.percentage_surprised}%</span>
                 </h3>
               </div>
             </li>
@@ -258,7 +319,7 @@ const Dashboard = () => {
                 <h6>Neutral</h6>
                 <h3>
                   {overAllReport?.emotion_neutral}
-                  <span>20%</span>
+                  <span>{overAllReport?.percentage_neutral}%</span>
                 </h3>
               </div>
             </li>
@@ -270,7 +331,7 @@ const Dashboard = () => {
                 <h6>Confused</h6>
                 <h3>
                   {overAllReport?.emotion_sad}
-                  <span>8%</span>
+                  <span>{overAllReport?.percentage_sad}%</span>
                 </h3>
               </div>
             </li>
@@ -282,7 +343,7 @@ const Dashboard = () => {
                 <h6>Unhappy</h6>
                 <h3>
                   {overAllReport?.emotion_unhappy}
-                  <span>7%</span>
+                  <span>{overAllReport?.percentage_unhappy}%</span>
                 </h3>
               </div>
             </li>
@@ -320,7 +381,7 @@ const Dashboard = () => {
               {
                 todayReport?.length > 0 && todayReport?.map((report, index) => (
                   <li className={`${selectedTodayReport?.name === report?.name && styles.active} ${styles.happy}`}
-                    onClick={() => setSelectedTodayReport(report)}>
+                    onClick={() => calPercentageForSelectedUser(report)}>
                     <a>
                       <span className={styles.segments}>
                         <img src={Images.SEGMENT01} alt="Segments" width="16" />
