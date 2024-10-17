@@ -20,12 +20,12 @@ const LineCharts = ({ data }) => {
     dataIndex: 4
   },
   {
-    name: 'Disgusted',
+    name: 'Neutral',
     data: [],
     dataIndex: 5
   },
   {
-    name: 'Contempt',
+    name: 'Unhappy',
     data: [],
     dataIndex: 6
   }]);
@@ -38,11 +38,21 @@ const LineCharts = ({ data }) => {
       const cat = reverseData?.map((x) => x[1])
       setCategories(cat);
       const temp = chartSeries?.map((cat) => {
-        const resData = reverseData.map(item => item[cat.dataIndex]);
+        let resData = [];
+        if (cat.dataIndex === 6) {
+          const array1 = reverseData.map(item => item[cat.dataIndex])
+          const array2 = reverseData.map(item => item[cat.dataIndex + 1])
+          resData = array1.map(function (num, idx) {
+            return parseInt(num) + parseInt(array2[idx]);
+          });
+        } else {
+          resData = reverseData.map(item => item[cat.dataIndex]);
+        }
         return ({
-        ...cat,
-        data: [...resData]
-      })})
+          ...cat,
+          data: [...resData]
+        })
+      })
       setChartSeries(temp);
     }
   }, [data])
@@ -66,7 +76,7 @@ const LineCharts = ({ data }) => {
       animateGradually: {
         enabled: true,
         delay: 150
-    },
+      },
     },
     dataLabels: {
       style: {
@@ -112,9 +122,9 @@ const LineCharts = ({ data }) => {
         <DateRangePickerComp />
       </div>
       <div className={styles.chartwrapper}>
-      <div id="chart" className={styles.chart}>
-        <ReactApexChart options={options} series={chartSeries} type="line" height={350} />
-      </div>
+        <div id="chart" className={styles.chart}>
+          <ReactApexChart options={options} series={chartSeries} type="line" height={350} />
+        </div>
       </div>
     </div>
   );
