@@ -97,7 +97,7 @@ const TodayReport = ({data}) => {
             <p>Happy</p>
             <h3>
               {data?.emotion_happy}
-              <span>55 %</span>
+              <span>{data?.percentage_happy}%</span>
             </h3> 
             <img className={getsmileye("hap")} src={Images.HAPPY_ACTIVE } alt="Happy" width="30" />
           </li>
@@ -105,7 +105,7 @@ const TodayReport = ({data}) => {
             <p>Surprised</p>
             <h3>
             {data?.emotion_surprised}
-              <span>22 %</span>
+              <span>{data?.percentage_surprised}%</span>
             </h3>
             <img className={getsmileye("sur")} src={Images.SURPRISED_ACTIVE} alt="Surprised" width="30" />
           </li>
@@ -113,7 +113,7 @@ const TodayReport = ({data}) => {
             <p>Neutral</p>
             <h3>
             {data?.emotion_neutral}
-              <span>22 %</span>
+              <span>{data?.percentage_neutral}%</span>
             </h3>
             <img className={getsmileye("nue")} src={Images.NEUTRAL_ACTIVE} alt="Neutral" width="30" />
           </li>
@@ -121,7 +121,7 @@ const TodayReport = ({data}) => {
             <p>Confused</p>
             <h3>
             {data?.emotion_sad}
-              <span>12 %</span>
+              <span>{data?.percentage_sad}%</span>
             </h3>
             <img className={getsmileye("con")} src={Images.CONFUSED_ACTIVE} alt="Confused" width="30" />
           </li>
@@ -129,7 +129,7 @@ const TodayReport = ({data}) => {
             <p>Unhappy</p>
             <h3>
             {emotion_unhappy}
-              <span>7 %</span>
+              <span>{data?.percentage_unhappy}%</span>
             </h3>
             <img className={getsmileye("dis")} src={Images.DISGUSTED_ACTIVE} alt="Disgusted" width="30" />
           </li>
