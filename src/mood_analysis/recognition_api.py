@@ -268,7 +268,7 @@ def face_detection(cv2,imgdata):
     "Jesus",
     "Peter",
     "Selva",
-    "Sg",
+    "SG",
     "Deigo"
   ]
   # Initialize some variables
@@ -623,7 +623,7 @@ def get_all_socket_entries():
         # Query the DB to get all line chart datas
         # line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad,sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by date_time order by date_time"
         # line_sql_query = f"SELECT to_char(date_time, 'YYYY-MM-DD') as arrival_date, to_char(date_time, 'HH12:MI:SS AM') as arrival_time,sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad, sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends WHERE date_time >= (current_timestamp - (50 ||' seconds')::interval) AND date_time <  current_timestamp group by date_time, arrival_date, arrival_time order by date_time"
-        line_sql_query = f"SELECT arrival_date, arrival_time, sum(emotion_happy) as happy,sum(emotion_surprised) as fear,sum(emotion_sad) as sad, sum(emotion_fear) as surprised,sum(emotion_angry) as angry FROM public.users_trends group by arrival_date, arrival_time order by arrival_date desc, arrival_time desc limit 50"
+        line_sql_query = f"SELECT arrival_date, arrival_time, sum(emotion_happy) as happy,sum(emotion_surprised) as surprised,sum(emotion_sad) as sad, sum(emotion_neutral) as neutral, sum(emotion_fear) as fear, sum(emotion_angry) as angry FROM public.users_trends group by arrival_date, arrival_time order by arrival_date desc, arrival_time desc limit 50"
 
         list_cursor.execute(line_sql_query)
         list_result = list(list_cursor.fetchall())
