@@ -18,6 +18,8 @@ import requests
 import os 
 from PIL import Image
 import socketio.client
+from datetime import date
+from datetime import datetime
 
 # Get the relativ path to this file (we will use it later)
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -82,9 +84,23 @@ def get_insert_data(json_data):
 
                update_user_querry = f"UPDATE users SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE name = '{json_data['name']}' AND date_time = '{json_data['date']}'"
                cursor.execute(update_user_querry)
-         
-               insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy,arrival_date_time,arrival_date,arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
-               cursor.execute(insert_user_querry_trends)
+            
+            # User Trends update check 
+
+            usertrends_saw_today_sql_query =\
+            f"SELECT * FROM users_trends WHERE arrival_date = '{json_data['date']}' AND arrival_time = '{json_data['time']}' AND name = '{json_data['name']}'"
+            cursor.execute(usertrends_saw_today_sql_query)
+            result_trends = cursor.fetchall()
+            connection.commit()
+            for row_treds in result_trends:
+                print(row_treds[8]+int(json_data['emotion_surprised']))
+            # If use is already in the DB for today:
+                if result_trends:
+                    insert_user_querry_trends = f"UPDATE users_trends SET emotion_happy = '{updated_emotion_happy}',emotion_sad = '{updated_emotion_sad}',emotion_fear = '{updated_emotion_fear}',emotion_surprised = '{updated_emotion_surprised}',emotion_neutral = '{updated_emotion_neutral}',emotion_angry = '{updated_emotion_angry}' WHERE arrival_date = '{json_data['date']}' AND arrival_time = '{json_data['time']}' AND name = '{json_data['name']}'"
+                    cursor.execute(insert_user_querry_trends)
+                else:
+                    insert_user_querry_trends = f"INSERT INTO users_trends (name,age,gender,emotion_happy,emotion_sad,emotion_fear,emotion_surprised,emotion_neutral,emotion_angry,accuracy,arrival_date_time,arrival_date,arrival_time) VALUES ('{json_data['name']}','{json_data['age']}','{json_data['gender']}','{updated_emotion_happy}','{updated_emotion_sad}','{updated_emotion_fear}','{updated_emotion_surprised}','{updated_emotion_neutral}','{updated_emotion_angry}','{json_data['accuracy']}', current_timestamp, to_char(current_timestamp, 'YYYY-MM-DD'), to_char(current_timestamp, 'HH12:MI:SS AM'))"
+                    cursor.execute(insert_user_querry_trends)
   
             else:
                 print("user OUT")
@@ -165,6 +181,13 @@ def post_results(name,age,gender,emotion,encoded_image):
         emotion6=1 
 
     # * ---------- SAVE data to send to the API -------- *
+
+    now = datetime.now()
+    dt_date = now.strftime("%Y-%m-%d")
+    dt_time = now.strftime("%H:%M:%S %p")
+    print("Date", dt_date)
+    print("Time", dt_time)
+
     json_to_export['name'] = name
     json_to_export['age'] = age
     json_to_export['gender'] = gender
@@ -176,8 +199,8 @@ def post_results(name,age,gender,emotion,encoded_image):
     json_to_export['emotion_surprised'] = emotion6
     json_to_export['accuracy'] = '50%'
     json_to_export['picture_array'] = encoded_image
-    json_to_export['date'] = f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}'
-
+    json_to_export['date'] = f'{dt_date}'
+    json_to_export['time'] = f'{dt_time}'
 
     # * ---------- SEND data to API --------- *
     #print("Status: ", json_to_export)
