@@ -1,21 +1,16 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Images from 'assets/Images';
 import LineCharts from 'components/minor/chart/line';
 import DateRangePickerComp from 'components/minor/react-date-range/react-date-range';
 import Webcam from "react-webcam";
-import ReactDOM from 'react-dom';
 import { Buffer } from 'buffer';
-
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-
 import GIF001 from 'assets/images/gif/gif001.gif';
 import GIF002 from 'assets/images/gif/gif002.gif';
-import GIF003 from 'assets/images/gif/gif003.gif';
-import GIF004 from 'assets/images/gif/gif004.gif';
 import GIF005 from 'assets/images/gif/gif005.gif';
 import Purchases from './purchases';
 import History from './history';
@@ -24,112 +19,117 @@ import styles from './dashboard.module.scss';
 import { socket } from './socket';
 
 
+const reportConst = {
+  "name": "All",
+  "picture": "None",
+  "gender": "None",
+  "accuracy": "",
+  "age": "",
+  "emotion_happy": "0",
+  "emotion_fear": "0",
+  "emotion_sad": "0",
+  "emotion_surprised": "0",
+  "emotion_neutral": "0",
+  "emotion_angry": "0",
+  "image64": "iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAAflBMVEUAAAD///+ioqKVlZWdnZ2Xl5eenp6ampqdnZ2cnJyZmZmcnJybm5uYmJiZmZmampqYmJiampqbm5uZmZmbm5uampqZmZmampqbm5uZmZmZmZmampqbm5uampqampqbm5uampqampqampqZmZmbm5uampqampqbm5uampqampoKxF/xAAAAKXRSTlMAAQsMDRsdJicsLTY9Q0ZHSElZWmZofYOEhZmapbm6vNDS2d3n6Ons8gAuwFAAAAABYktHRAH/Ai3eAAAAb0lEQVQYGc3BywJCQABA0as8KoQmSkyF8fr/H8zKqLFpVefwJw55vmdFpLJMHTFVIYRPTIMN9oDpkUJ6x7RrpGw8VmyTZMM3nFiI2OGDe607WZayqy8uC6IvAouJFRT9Ca31mfkKbTwvjGi3N/zcC/yfCARgZXWIAAAAAElFTkSuQmCC",
+  "date_time": "None"
+}
+
 const Dashboard = () => {
   // @ts-ignore
   window.Buffer = Buffer;
   // Bala Code
-  const [ value, setValue ] = React.useState('1');
+  const webcamRef = React.useRef(null);
+  const [value, setValue] = React.useState('1');
   const [todayReport, setTodayReport] = useState([]);
   const [todayReportChart, setTodayReportChart] = useState([]);
-
+  const [overAllReport, setOverAllReport] = useState(reportConst)
   const [selectedTodayReport, setSelectedTodayReport] = useState();
-  const [selectedReportIndex, setSelectedReportIndex] = useState(0);
   const [indexId, setIndexId] = useState(null);
-  const webcamRef = React.useRef(null);
-  const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-      function onConnect() {
-        console.log('Connected', fooEvents)
-        // sendImage()
-        setIsConnected(true);
-      }
-  
-      function onDisconnect() {
-        setIsConnected(false);
-      }
-  
-      function onFooEvent(value) {
-        console.log('custom-message',value)
-        if(value) {
-          var b = value.replace(/'/g, '"');
-          const d = JSON.parse(b);
-          console.log('custom-message',d)
-          setFooEvents(previous => [...previous, value]);
-          const response = d
-          if(response.answer_to_send && response.answer_to_send.length>0) {
-              setTodayReport(response.answer_to_send)
-              console.log("Old",selectedTodayReport)
-              console.log("New",response.answer_to_send[selectedReportIndex])
-              setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
-          }
-          // Chart Data Fetch
-          if(response.answer_to_chart && response.answer_to_chart.length>0) {
-            setTodayReportChart(response.answer_to_chart)
-            }
+  useEffect(() => {
+    function onConnect() {
+      console.log('Socket connected!')
+    }
+
+    function onDisconnect() {
+      onsole.log('Socket Disconnected!')
+    }
+
+    function onFooEvent(value) {
+      if (value) {
+        var b = value.replace(/'/g, '"');
+        const d = JSON.parse(b);
+        const response = d
+        if (response.answer_to_send && response.answer_to_send.length > 0) {
+          setTodayReport(response.answer_to_send)
+        }
+        // Chart Data Fetch
+        if (response.answer_to_chart && response.answer_to_chart.length > 0) {
+          setTodayReportChart(response.answer_to_chart)
         }
       }
-      socket.on("connect_error", (error) => {
-        console.log('error', error)
-      });
-  
-      socket.on('connect', onConnect);
-      socket.on('custom-message', onFooEvent);
-  
-      return () => {
-        socket.off('connect', onConnect);
-        socket.off('foo', onFooEvent);
-      };
-    }, []);
+    }
 
-    useEffect(() => {
-      setInterval(() => {
-        let imageSrc = webcamRef.current.getScreenshot();
-        if(imageSrc) {
-          imageSrc = imageSrc?.replace(/^data:image\/[a-z]+;base64,/, "");
-          // console.log("ImageStr",imageSrc)
-          // fetch('http://127.0.0.1:5000/receive_image', {
-          fetch('https://okotech.ai/api/receive_image', {
+    socket.on("connect_error", (error) => {
+      console.log('error', error)
+    });
+
+    socket.on('connect', onConnect);
+    socket.on('custom-message', onFooEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('foo', onFooEvent);
+    };
+  }, []);
+
+  useEffect(() => {
+    setInterval(() => {
+      let imageSrc = webcamRef.current?.getScreenshot();
+      if (imageSrc) {
+        imageSrc = imageSrc?.replace(/^data:image\/[a-z]+;base64,/, "");
+        // console.log("ImageStr",imageSrc)
+        // fetch('http://127.0.0.1:5000/receive_image', {
+        fetch('https://okotech.ai/api/receive_image', {
           method: 'POST',
           body: JSON.stringify({
-          // Add parameters here
-          image64: imageSrc
+            // Add parameters here
+            image64: imageSrc
           }),
           headers: {
-          'Content-type': 'application/json; charset=UTF-8',
-         }
+            'Content-type': 'application/json; charset=UTF-8',
+          }
         })
-        .then((response) => response.json())
-        .then((data) => {
-        console.log(data);
-        // Handle Fetch data
-        })
-        .catch((err) => {
-        console.log(err.message);
-        });
-        }
-        
-      }, 2000);
-    }, [])
-
-    useEffect(() => {
-      if(indexId){
-      clrInterval()
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            // Handle Fetch data
+          })
+          .catch((err) => {
+            console.log(err.message);
+          });
       }
-      //startInterval()
-      fetchUserData()
-    }, [selectedReportIndex]);
+
+    }, 2000);
+  }, [])
+
+  useEffect(() => {
+    if (indexId) {
+      clrInterval()
+    }
+    //startInterval()
+    fetchUserData()
+  }, []);
 
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  
+
   const startInterval = () => {
-    const intervalId=setInterval(() => {
-       fetchUserData()
+    const intervalId = setInterval(() => {
+      fetchUserData()
     }, 7000);
     setIndexId(intervalId)
   };
@@ -139,59 +139,72 @@ const Dashboard = () => {
   };
 
   const fetchUserData = () => {
-  // fetch('hhttp://127.0.0.1:5000/get_users_data')
-  fetch('https://okotech.ai/api/get_users_data')
-  .then(response => response.json())
-  .then(response => {
-    console.log("User Response",response)
-      if(response.answer_to_send && response.answer_to_send.length>0) {
+    // fetch('hhttp://127.0.0.1:5000/get_users_data')
+    fetch('https://okotech.ai/api/get_users_data')
+      .then(response => response.json())
+      .then(response => {
+        if (response.answer_to_send && response.answer_to_send.length > 0) {
           setTodayReport(response.answer_to_send)
-          console.log("Old",selectedTodayReport)
-          console.log("New",response.answer_to_send[selectedReportIndex])
-          setSelectedTodayReport(response.answer_to_send[selectedReportIndex])
-      }
-      // Chart Data Fetch
-      if(response.answer_to_chart && response.answer_to_chart.length>0) {
-        setTodayReportChart(response.answer_to_chart)
-      }      
-  })
+        }
+        // Chart Data Fetch
+        if (response.answer_to_chart && response.answer_to_chart.length > 0) {
+          setTodayReportChart(response.answer_to_chart)
+        }
+      })
   };
 
-//   const updateImage = () => {
-//     // Using Fetch API
-//     let imageSrc = webcamRef.current.getScreenshot();
-//     imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
-//     console.log("ImageStr",imageSrc)
-//     fetch('http://127.0.0.1:5000/receive_image', {
-//     method: 'POST',
-//     body: JSON.stringify({
-//     // Add parameters here
-//     image64: imageSrc
-//     }),
-//     headers: {
-//       'Content-type': 'application/json; charset=UTF-8',
-//     }
-//   })
-//    .then((response) => response.json())
-//    .then((data) => {
-//       console.log(data);
-//       // Handle data
-//    })
-//    .catch((err) => {
-//       console.log(err.message);
-//    });
-//  };
-  
-  let happy_count=0,surprised_count=0,sad_count=0,angry_count=0,fear_count=0,neutral_count=0,unhappy_count=0;
-  for (let i = 0; i < todayReport.length; i++) {
-    happy_count+=parseInt(todayReport[i]?.emotion_happy)
-    surprised_count+=parseInt(todayReport[i]?.emotion_surprised)
-    neutral_count+=parseInt(todayReport[i]?.emotion_neutral)
-    sad_count+=parseInt(todayReport[i]?.emotion_sad)
-    angry_count+=parseInt(todayReport[i]?.emotion_angry)
-    fear_count+=parseInt(todayReport[i]?.emotion_fear)
-    unhappy_count=angry_count+fear_count
-  } 
+  //   const updateImage = () => {
+  //     // Using Fetch API
+  //     let imageSrc = webcamRef.current.getScreenshot();
+  //     imageSrc = imageSrc.replace(/^data:image\/[a-z]+;base64,/, "");
+  //     console.log("ImageStr",imageSrc)
+  //     fetch('http://127.0.0.1:5000/receive_image', {
+  //     method: 'POST',
+  //     body: JSON.stringify({
+  //     // Add parameters here
+  //     image64: imageSrc
+  //     }),
+  //     headers: {
+  //       'Content-type': 'application/json; charset=UTF-8',
+  //     }
+  //   })
+  //    .then((response) => response.json())
+  //    .then((data) => {
+  //       console.log(data);
+  //       // Handle data
+  //    })
+  //    .catch((err) => {
+  //       console.log(err.message);
+  //    });
+  //  };
+
+  useEffect(() => {
+    let happy_count = 0, surprised_count = 0, sad_count = 0, angry_count = 0, fear_count = 0, neutral_count = 0, unhappy_count = 0;
+    for (let i = 0; i < todayReport.length; i++) {
+      happy_count += parseInt(todayReport[i]?.emotion_happy)
+      surprised_count += parseInt(todayReport[i]?.emotion_surprised)
+      neutral_count += parseInt(todayReport[i]?.emotion_neutral)
+      sad_count += parseInt(todayReport[i]?.emotion_sad)
+      angry_count += parseInt(todayReport[i]?.emotion_angry)
+      fear_count += parseInt(todayReport[i]?.emotion_fear)
+      unhappy_count = angry_count + fear_count
+    }
+    const temp = {
+        ...reportConst,
+        "emotion_happy": happy_count,
+        "emotion_fear": fear_count,
+        "emotion_sad": sad_count,
+        "emotion_surprised": surprised_count,
+        "emotion_neutral": neutral_count,
+        "emotion_angry": angry_count,
+        "emotion_unhappy": unhappy_count
+    }
+    setOverAllReport(temp)
+    if(!selectedTodayReport?.name && todayReport?.length) {
+      setSelectedTodayReport(temp)
+    }
+  }, [todayReport])
+
 
   return (
     <div className={styles.dashboard_container}>
@@ -207,7 +220,7 @@ const Dashboard = () => {
                 <h6>Happy</h6>
                 <h3>
                   {/* {todayReport[2]?.emotion_happy} */}
-                  {happy_count}
+                  {overAllReport?.emotion_happy}
                   <span>60%</span>
                 </h3>
               </div>
@@ -219,7 +232,7 @@ const Dashboard = () => {
               <div className={styles.txtCont}>
                 <h6>Surprised</h6>
                 <h3>
-                  {surprised_count}
+                  {overAllReport?.emotion_surprised}
                   <span>20%</span>
                 </h3>
               </div>
@@ -231,7 +244,7 @@ const Dashboard = () => {
               <div className={styles.txtCont}>
                 <h6>Neutral</h6>
                 <h3>
-                  {neutral_count}
+                  {overAllReport?.emotion_neutral}
                   <span>20%</span>
                 </h3>
               </div>
@@ -243,7 +256,7 @@ const Dashboard = () => {
               <div className={styles.txtCont}>
                 <h6>Confused</h6>
                 <h3>
-                  {sad_count}
+                  {overAllReport?.emotion_sad}
                   <span>8%</span>
                 </h3>
               </div>
@@ -255,23 +268,43 @@ const Dashboard = () => {
               <div className={styles.txtCont}>
                 <h6>Unhappy</h6>
                 <h3>
-                {unhappy_count}
+                  {overAllReport?.emotion_unhappy}
                   <span>7%</span>
                 </h3>
               </div>
             </li>
           </ul>
           <div className={styles.emotTrend}>
-            <LineCharts data={todayReportChart}/>
+            <LineCharts data={todayReportChart} />
           </div>
         </div>
         <div className={styles.customer_data}>
           <div className={styles.customer_list}>
             <ul>
-            {/* Bala code */}
-            {
-                todayReport?.length > 0 && todayReport?.map((report,index) => (
-                  <li className={`${selectedReportIndex === index && styles.active} ${styles.happy}`} onClick={() =>{setSelectedTodayReport(report);setSelectedReportIndex(index)} }>
+              {/* Bala code */}
+              <li className={`${selectedTodayReport?.name === "All" && styles.active} ${styles.happy}`} 
+              onClick={() => setSelectedTodayReport(overAllReport)}>
+                <a>
+                  <span className={styles.segments}>
+                    <img src={Images.SEGMENT01} alt="Segments" width="16" />
+                  </span>
+                  <div className={styles.user}>
+                    <span className={styles.profileimg}>
+                      <img src={Images.PROFILE} alt="Customer" width="36" />
+                    </span>
+                    <h5 className={styles.user}>
+                      All
+                    </h5>
+                  </div>
+                  <span className={styles.customer_type}>
+                    E
+                  </span>
+                </a>
+              </li>
+              {
+                todayReport?.length > 0 && todayReport?.map((report, index) => (
+                  <li className={`${selectedTodayReport?.name === report?.name && styles.active} ${styles.happy}`}
+                    onClick={() => setSelectedTodayReport(report)}>
                     <a>
                       <span className={styles.segments}>
                         <img src={Images.SEGMENT01} alt="Segments" width="16" />
@@ -291,7 +324,6 @@ const Dashboard = () => {
                   </li>
                 ))
               }
-              {console.log(todayReport)}
               {/* <li className={`${styles.active} ${styles.happy}`}>
                 <a>
                   <span className={styles.segments}>
@@ -419,7 +451,7 @@ const Dashboard = () => {
                     </TabList>
                   </Box>
                   <TabPanel value="1">
-                    <TodayReport data={selectedTodayReport}/>
+                    <TodayReport data={selectedTodayReport} />
                   </TabPanel>
                   <TabPanel value="2">
                     <History />
@@ -441,21 +473,21 @@ const Dashboard = () => {
         <ul className={styles.cameraList}>
           <li>
             <a>
-               {/* <img src={GIF004} alt="Camera01" />  */}
-                {<Webcam 
-                 width='100%'
-                 height='100%'
-                 screenshotFormat="image/jpeg"
-                 aspectRatio={10}
-                />}
-                {<Webcam 
-                 width={1000}
-                 height={800}
-                 ref={webcamRef}
-                 screenshotFormat="image/jpeg"
-                 aspectRatio={10}
-                 style={{opacity: 1, flex:1, position:'absolute', zIndex:0}}
-                />}
+              {/* <img src={GIF004} alt="Camera01" />  */}
+              {<Webcam
+                width='100%'
+                height='100%'
+                screenshotFormat="image/jpeg"
+                aspectRatio={10}
+              />}
+              {<Webcam
+                width={1000}
+                height={800}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                aspectRatio={10}
+                style={{ opacity: 1, flex: 1, position: 'absolute', zIndex: 0 }}
+              />}
               <span>CAM001</span>
             </a>
             <ul>

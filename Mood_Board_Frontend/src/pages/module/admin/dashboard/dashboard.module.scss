@@ -628,3 +628,9 @@
     position: relative;
     overflow: hidden;
 }
+
+.customer_list {
+    li {
+        cursor: pointer;
+    }
+}
