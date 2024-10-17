@@ -24,7 +24,12 @@ export default {
   CONTEMPT_BG: require('./images/removable/contempt.svg').default,
   CONFUSED_BG: require('./images/removable/confused.svg').default,
 
-
+  USERS: require('./images/icons/users.svg').default,
+  PASSWORD: require('./images/icons/password.svg').default,
+  CLOCK: require('./images/icons/clock.svg').default,
+  NOTIFICATIONS: require('./images/icons/notifications.svg').default,
+  CAMERA: require('./images/icons/camera.svg').default,
+  
   HAPPY: require('./images/emoji/happy.svg').default,
   SURPRISED: require('./images/emoji/surprised.svg').default,
   CONFUSED: require('./images/emoji/confused.svg').default,

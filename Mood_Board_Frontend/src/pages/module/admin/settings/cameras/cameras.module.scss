@@ -1,0 +1,68 @@
+.cameraContainer{
+
+}
+
+.cameraListCont{
+    h4{
+        font-size: 18px;
+        margin-bottom: 0px;
+    }
+    header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+        ul{
+            li{
+                button{
+                    height: 30px;
+                    padding: 0px 20px;
+                    border-radius: 5px;
+                    border: none;
+                    background-color: #243BA3;
+                    color: #FFFFFF;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+}
+
+.addCameraForm{
+    padding: 25px;
+    .btnCont{
+        display: flex;
+        justify-content: flex-end;
+        button{
+            height: 30px;
+            padding: 0px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #243BA3;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+    }
+    h4{
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+    .fieldCont{
+        margin-bottom: 15px;
+        label{
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        input{
+            height: 40px;
+
+            width: 400px;
+            max-width: 100%;
+            border-radius: 5px;
+            border: 1px solid rgba(0,0,0,0.3);
+            font-size: 14px;
+            padding: 0px 10px;
+        }
+    }
+}

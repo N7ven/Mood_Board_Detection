@@ -1,0 +1,48 @@
+.settingsCont{
+    width: 100%;
+    background-color: #FFFFFF;
+    display: flex;
+    .leftMenu{
+        width: 250px;
+        background-color: #FBFBFD;
+        padding: 20px;
+        h4{
+            font-size: 18px;
+        }
+        ul{
+            margin-top: 15px;
+            li{
+                margin: 0px 0px;
+                a{
+                    font-size: 12px;
+                    color: #757575;
+                    display: flex;
+                    padding: 8px 5px;
+                    display: flex;
+                    align-items: center;
+                    span{
+                        width: 26px;
+                        height: 26px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin-right: 6px;
+                    }
+                    &.active{
+                        background-color: #00B4FD;
+                        color: #FFFFFF;
+                        border-radius: 5px;
+                        text-decoration: none;
+                        img{
+                            filter: brightness(0) invert(100);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .settingsContentContainer{
+        width: calc(100% - 250px);
+        padding: 15px;
+    }
+}
