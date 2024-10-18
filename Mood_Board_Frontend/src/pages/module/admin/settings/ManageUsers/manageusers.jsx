@@ -46,9 +46,9 @@ const ManageUsers = () => {
   return (
     <div className={styles.cameraListCont}>
         <header>
-            <h4>Cameras</h4>
+            <h4 style={{marginBottom: '10px'}}>Manage Users</h4>
             <ul>
-                <li><button onClick={handleClickOpenAddCamera}>Add Camera</button></li>
+                {/* <li><button onClick={handleClickOpenAddCamera}>Add Users</button></li> */}
             </ul>
         </header>
         

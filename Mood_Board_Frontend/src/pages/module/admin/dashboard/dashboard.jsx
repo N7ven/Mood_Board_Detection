@@ -313,7 +313,7 @@ const Dashboard = () => {
             </li>
             <li className={styles.surprised}>
               <div className={styles.emoji}>
-                <img src={Images.SURPRISED} alt="surprised" width="24" />
+                <img src={Images.NEUTRAL_BG} alt="surprised" width="24" />
               </div>
               <div className={styles.txtCont}>
                 <h6>Neutral</h6>

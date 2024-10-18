@@ -19,7 +19,7 @@ export default {
 
   HAPPY_BG: require('./images/removable/happy.svg').default,
   SURPRISED_BG: require('./images/removable/surprised.svg').default,
-  NEUTRAL_BG: require('./images/removable/surprised.svg').default,
+  NEUTRAL_BG: require('./images/removable/neutral.svg').default,
   DISGUSTED_BG: require('./images/removable/disgusted.svg').default,
   CONTEMPT_BG: require('./images/removable/contempt.svg').default,
   CONFUSED_BG: require('./images/removable/confused.svg').default,
@@ -38,7 +38,7 @@ export default {
 
   HAPPY_ACTIVE: require('./images/emoji/happy-colored.svg').default,
   SURPRISED_ACTIVE: require('./images/emoji/surprised-colored.svg').default,
-  NEUTRAL_ACTIVE: require('./images/emoji/surprised-colored.svg').default,
+  NEUTRAL_ACTIVE: require('./images/emoji/neutral-colored.svg').default,
   CONFUSED_ACTIVE: require('./images/emoji/confused-colored.svg').default,
   DISGUSTED_ACTIVE: require('./images/emoji/disgusted-colored.svg').default,
   CONTEMPT_ACTIVE: require('./images/emoji/contempt-colored.svg').default,
