@@ -41,6 +41,12 @@ function SideNavbar() {
               <p>SETTINGS</p>
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/training">
+              <img src={Images.SETTINGS} alt="Settings" width="24" />
+              <p>Training</p>
+            </NavLink>
+          </li>
         </ul>
       </nav>
     </div>

@@ -12,6 +12,7 @@ import Notifications from 'pages/module/admin/settings/Notification/notification
 import ResetPassword from 'pages/module/admin/settings/ResetPassword/resetpassword';
 import StoreTiming from 'pages/module/admin/settings/StoreTiming/storetiming';
 import StoreCameras from 'pages/module/admin/settings/cameras/cameras';
+import Training from 'pages/module/admin/training/training';
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
         <Route path="alert" element={<AlertHome />} />
         <Route path="specialday" element={<SpecialDay />} />
         <Route path="playback" element={<PlayBack />} />
+        <Route path="training" element={<Training />} />
         <Route path="settings" element={<Settings />} >
           <Route path="users" element={<ManageUsers />} />
           <Route path="timing" element={<StoreTiming />} />
