@@ -3,11 +3,16 @@ import { Outlet, useNavigate } from 'react-router';
 import styles from './layout.module.scss';
 import SideNavbar from '../sidebar/sidebar';
 import AppHeader from '../header/header';
+import { useLocation } from 'react-router-dom';
 
 function AppLayout() {
   const navigate = useNavigate();
+  let location = useLocation();
   useEffect(() => {
-    navigate('/dashboard');
+    if(location.pathname === '/'){
+      navigate('/dashboard');
+    }
+    
   }, []);
   return (
     <div className={styles.app_wrapper}>
